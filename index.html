@@ -58,7 +58,6 @@
     a { color: var(--link); text-decoration: none; }
     a:hover { text-decoration: underline; }
 
-    /* bottom snapshot section */
     .snap-wrap { max-width: 980px; margin: 0 auto; padding: 0 16px 18px; }
     .snap-title { margin: 10px 0 8px; font-size: 13px; font-weight: 650; color: var(--text); }
     .snap-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -76,7 +75,7 @@
 <body>
   <header>
     <h1>Mortgage Calculator</h1>
-    <p>Monthly mortgage + (optional) shared ownership rent. Shows interest/capital split at the 13th and 25th payments.</p>
+    <p>Monthly mortgage + (optional) shared ownership rent. Keeps your inputs when you open the explainer page (no cookies).</p>
   </header>
 
   <main class="grid">
@@ -126,7 +125,6 @@
         </label>
       </div>
 
-      <!-- Shared ownership details -->
       <div id="ownershipBlock" style="display:none;">
         <div class="row">
           <div class="field">
@@ -141,15 +139,15 @@
 
         <div class="inline-help">
           <div class="text">
-            Confused why changing ownership % changes your monthly costs? Rent is charged on the <b>unowned</b> portion, and rent is typically “interest-like” (it doesn’t pay down your mortgage balance).
+            Want to understand why ownership % affects monthly cost? This explainer keeps your current inputs (no cookies).
           </div>
           <div class="cta">
-            <a href="./shared-ownership-explainer.html">Learn why (with example) →</a>
+            <a id="explainerLinkTop" href="./shared-ownership-explainer.html">Learn why →</a>
           </div>
         </div>
 
         <div class="note">
-          This asks for the <b>annual rent rate</b> charged on the <b>unowned share</b>. Default market assumption is <b>2.7%</b>.
+          Rent rate is an <b>annual</b> % charged on the <b>unowned</b> share (default <b>2.7%</b>).
         </div>
       </div>
 
@@ -160,7 +158,7 @@
 
       <div id="error" class="error" role="alert" aria-live="polite"></div>
       <div class="note">
-        Note: For repayment mortgages, the interest/capital split changes every month. The snapshots below show the splits at the 13th and 25th mortgage payments.
+        Snapshots below show mortgage splits at the 13th and 25th payments (rent is added into total outpay).
       </div>
     </section>
 
@@ -189,58 +187,33 @@
         </div>
       </div>
 
-      <div class="note" id="schemeNote"></div>
       <div class="note">
-        <a href="./shared-ownership-explainer.html">Why ownership % changes monthly costs →</a>
+        <a id="explainerLinkBottom" href="./shared-ownership-explainer.html">Why ownership % changes monthly costs →</a>
       </div>
+      <div class="note" id="schemeNote"></div>
     </section>
   </main>
 
-  <!-- Bottom-of-page snapshots -->
   <div class="snap-wrap">
     <div class="snap-title">Yearly change snapshots (mortgage split + total outpay)</div>
     <div class="snap-grid">
       <div class="card">
         <div class="section-title">13th mortgage payment (start of year 2)</div>
         <div class="out">
-          <div class="metric">
-            <div class="k">Mortgage interest</div>
-            <div class="v" id="p13_interest">—</div>
-          </div>
-          <div class="metric">
-            <div class="k">Mortgage capital</div>
-            <div class="v" id="p13_capital">—</div>
-          </div>
-          <div class="metric">
-            <div class="k">Rent (monthly)</div>
-            <div class="v" id="p13_rent">—</div>
-          </div>
-          <div class="metric">
-            <div class="k">Total outpay (monthly)</div>
-            <div class="v" id="p13_total">—</div>
-          </div>
+          <div class="metric"><div class="k">Mortgage interest</div><div class="v" id="p13_interest">—</div></div>
+          <div class="metric"><div class="k">Mortgage capital</div><div class="v" id="p13_capital">—</div></div>
+          <div class="metric"><div class="k">Rent (monthly)</div><div class="v" id="p13_rent">—</div></div>
+          <div class="metric"><div class="k">Total outpay (monthly)</div><div class="v" id="p13_total">—</div></div>
         </div>
       </div>
 
       <div class="card">
         <div class="section-title">25th mortgage payment (start of year 3)</div>
         <div class="out">
-          <div class="metric">
-            <div class="k">Mortgage interest</div>
-            <div class="v" id="p25_interest">—</div>
-          </div>
-          <div class="metric">
-            <div class="k">Mortgage capital</div>
-            <div class="v" id="p25_capital">—</div>
-          </div>
-          <div class="metric">
-            <div class="k">Rent (monthly)</div>
-            <div class="v" id="p25_rent">—</div>
-          </div>
-          <div class="metric">
-            <div class="k">Total outpay (monthly)</div>
-            <div class="v" id="p25_total">—</div>
-          </div>
+          <div class="metric"><div class="k">Mortgage interest</div><div class="v" id="p25_interest">—</div></div>
+          <div class="metric"><div class="k">Mortgage capital</div><div class="v" id="p25_capital">—</div></div>
+          <div class="metric"><div class="k">Rent (monthly)</div><div class="v" id="p25_rent">—</div></div>
+          <div class="metric"><div class="k">Total outpay (monthly)</div><div class="v" id="p25_total">—</div></div>
         </div>
       </div>
     </div>
@@ -257,6 +230,67 @@
     return new Intl.NumberFormat("en-GB", { style:"currency", currency:"GBP", maximumFractionDigits: 2 }).format(x);
   };
 
+  // --- No-cookie state in URL helpers ---
+  function b64urlEncode(str) {
+    // base64url without padding
+    return btoa(unescape(encodeURIComponent(str)))
+      .replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+  }
+  function b64urlDecode(str) {
+    // restore padding
+    const padLen = (4 - (str.length % 4)) % 4;
+    const padded = str.replace(/-/g, "+").replace(/_/g, "/") + "=".repeat(padLen);
+    return decodeURIComponent(escape(atob(padded)));
+  }
+  function getQueryParam(name) {
+    const u = new URL(window.location.href);
+    return u.searchParams.get(name);
+  }
+  function setQueryParam(url, key, value) {
+    const u = new URL(url, window.location.origin);
+    u.searchParams.set(key, value);
+    return u.pathname + u.search; // relative
+  }
+
+  function getStateFromInputs() {
+    return {
+      price: el("price").value,
+      downPct: el("downPct").value,
+      rate: el("rate").value,
+      years: el("years").value,
+      type: el("type").value,
+      shared: el("sharedToggle").checked ? 1 : 0,
+      ownPct: el("ownPct").value,
+      rentRatePct: el("rentRatePct").value
+    };
+  }
+
+  function applyStateToInputs(state) {
+    if (!state || typeof state !== "object") return;
+
+    if (state.price != null) el("price").value = state.price;
+    if (state.downPct != null) el("downPct").value = state.downPct;
+    if (state.rate != null) el("rate").value = state.rate;
+    if (state.years != null) el("years").value = state.years;
+    if (state.type != null) el("type").value = state.type;
+
+    const shared = state.shared === 1 || state.shared === "1" || state.shared === true || state.shared === "true";
+    el("sharedToggle").checked = shared;
+    el("ownershipBlock").style.display = shared ? "block" : "none";
+
+    if (state.ownPct != null) el("ownPct").value = state.ownPct;
+    if (state.rentRatePct != null) el("rentRatePct").value = state.rentRatePct;
+  }
+
+  function syncExplainerLinks() {
+    const state = getStateFromInputs();
+    const encoded = b64urlEncode(JSON.stringify(state));
+    const href = setQueryParam("./shared-ownership-explainer.html", "state", encoded);
+    el("explainerLinkTop").setAttribute("href", href);
+    el("explainerLinkBottom").setAttribute("href", href);
+  }
+
+  // --- Calculator logic ---
   function validateNumber(name, value, {min=-Infinity, max=Infinity}={}) {
     if (value === "" || value === null || value === undefined || Number.isNaN(value)) return `${name} is required.`;
     if (value < min) return `${name} must be at least ${min}.`;
@@ -319,6 +353,7 @@
     if (errs.length) {
       el("error").textContent = errs[0];
       setSnapshotsToDash();
+      syncExplainerLinks();
       return;
     }
 
@@ -329,6 +364,7 @@
     if (principal < 0) {
       el("error").textContent = "Deposit cannot exceed the owned value of the property.";
       setSnapshotsToDash();
+      syncExplainerLinks();
       return;
     }
 
@@ -338,6 +374,7 @@
     if (n < 1) {
       el("error").textContent = "Mortgage term must be at least 1 year.";
       setSnapshotsToDash();
+      syncExplainerLinks();
       return;
     }
 
@@ -347,17 +384,14 @@
 
     if (type === "interestOnly") {
       mortgageMonthly = principal * i;
-
       const p13 = { interest: mortgageMonthly, capital: 0 };
       const p25 = { interest: mortgageMonthly, capital: 0 };
-
       el("p13_interest").textContent = fmtGBP(p13.interest);
       el("p13_capital").textContent  = fmtGBP(p13.capital);
       el("p25_interest").textContent = fmtGBP(p25.interest);
       el("p25_capital").textContent  = fmtGBP(p25.capital);
     } else {
       mortgageMonthly = repaymentMonthlyPayment(principal, i, n);
-
       if (n >= 13) {
         const s13 = repaymentSplitAtPayment(principal, i, mortgageMonthly, 13);
         el("p13_interest").textContent = fmtGBP(s13.interest);
@@ -366,7 +400,6 @@
         el("p13_interest").textContent = "—";
         el("p13_capital").textContent  = "—";
       }
-
       if (n >= 25) {
         const s25 = repaymentSplitAtPayment(principal, i, mortgageMonthly, 25);
         el("p25_interest").textContent = fmtGBP(s25.interest);
@@ -390,10 +423,11 @@
     el("p25_rent").textContent = fmtGBP(rentMonthly);
     el("p25_total").textContent = fmtGBP(totalMonthly);
 
-    const schemeText = shared
-      ? `Scheme: Shared ownership (${ownPct}% owned). Mortgage is based on the owned share loan; rent is added for the unowned share using a rent rate of ${rentRatePct}%.`
+    el("schemeNote").textContent = shared
+      ? `Scheme: Shared ownership (${ownPct}% owned). Total outpay = mortgage (owned share) + rent (unowned share at ${rentRatePct}%).`
       : `Scheme: Private property (100% owned).`;
-    el("schemeNote").textContent = schemeText;
+
+    syncExplainerLinks();
   }
 
   function reset() {
@@ -403,10 +437,9 @@
     el("years").value = 30;
     el("type").value = "repayment";
     el("sharedToggle").checked = false;
-
+    el("ownershipBlock").style.display = "none";
     el("ownPct").value = 50;
     el("rentRatePct").value = 2.7;
-    el("ownershipBlock").style.display = "none";
 
     el("mortgageMonthly").textContent = "—";
     el("rentMonthly").textContent = "—";
@@ -416,16 +449,48 @@
     el("schemeNote").textContent = "";
     el("error").textContent = "";
     setSnapshotsToDash();
+    syncExplainerLinks();
+
+    // Clear URL state if present
+    const u = new URL(window.location.href);
+    u.searchParams.delete("state");
+    window.history.replaceState({}, "", u.pathname + u.search);
+  }
+
+  function attachLiveSync() {
+    const ids = ["price","downPct","rate","years","type","sharedToggle","ownPct","rentRatePct"];
+    ids.forEach((id) => {
+      const node = el(id);
+      const evt = (node.tagName === "SELECT" || node.type === "checkbox") ? "change" : "input";
+      node.addEventListener(evt, () => {
+        if (id === "sharedToggle") {
+          el("ownershipBlock").style.display = node.checked ? "block" : "none";
+        }
+        calc();
+      });
+    });
   }
 
   el("calcBtn").addEventListener("click", calc);
   el("resetBtn").addEventListener("click", reset);
 
-  el("sharedToggle").addEventListener("change", (e) => {
-    el("ownershipBlock").style.display = e.target.checked ? "block" : "none";
-    calc();
-  });
+  // Restore state from URL (if returning from explainer)
+  (function initFromUrlState() {
+    const s = getQueryParam("state");
+    if (!s) return;
+    try {
+      const obj = JSON.parse(b64urlDecode(s));
+      applyStateToInputs(obj);
+      // remove state from URL after applying (keeps URL clean)
+      const u = new URL(window.location.href);
+      u.searchParams.delete("state");
+      window.history.replaceState({}, "", u.pathname + u.search);
+    } catch (e) {
+      // ignore bad state
+    }
+  })();
 
+  attachLiveSync();
   calc();
 </script>
 </body>
