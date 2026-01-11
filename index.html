@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Mortgage Calculator</title>
+  <style>
+    :root { --bg:#0b1220; --card:#111a2e; --text:#e7ecff; --muted:#a7b0d6; --line:#243155; }
+    body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background: var(--bg); color: var(--text); }
+    header { padding: 24px 16px 8px; max-width: 980px; margin: 0 auto; }
+    h1 { margin: 0 0 6px; font-size: 22px; }
+    p  { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.4; }
+    main { max-width: 980px; margin: 0 auto; padding: 16px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+    .section-title { font-weight: 650; margin: 0 0 10px; font-size: 14px; color: var(--text); }
+
+    .row { display:flex; gap: 10px; flex-wrap: wrap; }
+    .field { flex: 1 1 190px; display:flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
+    label { font-size: 12px; color: var(--muted); }
+    input, select {
+      background: #0e1730; color: var(--text);
+      border: 1px solid var(--line); border-radius: 10px;
+      padding: 10px 10px; font-size: 14px; outline: none;
+    }
+    input:focus, select:focus { border-color: #4d68ff; box-shadow: 0 0 0 3px rgba(77,104,255,.18); }
+
+    .toggle-row { display:flex; align-items:center; justify-content: space-between; gap: 10px; padding: 10px; border: 1px dashed var(--line); border-radius: 12px; background:#0e1730; }
+    .toggle-row small { color: var(--muted); display:block; margin-top: 2px; }
+    .switch { position: relative; width: 44px; height: 26px; flex: 0 0 auto; }
+    .switch input { display:none; }
+    .slider { position:absolute; inset:0; background:#1c2a50; border:1px solid var(--line); border-radius: 999px; cursor:pointer; transition:.2s; }
+    .slider:before { content:""; position:absolute; height:20px; width:20px; left:3px; top:2px; background:#cbd5ff; border-radius:999px; transition:.2s; }
+    .switch input:checked + .slider { background:#2b3fff; }
+    .switch input:checked + .slider:before { transform: translateX(18px); background:#fff; }
+
+    .btns { display:flex; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
+    button {
+      border: 1px solid var(--line); border-radius: 12px;
+      background: #2b3fff; color: #fff; padding: 10px 12px;
+      font-weight: 650; cursor:pointer;
+    }
+    button.secondary { background: transparent; color: var(--text); }
+    button:hover { filter: brightness(1.05); }
+
+    .out { display:grid; grid-template-columns: 1fr; gap: 10px; }
+    .metric {
+      padding: 12px; border: 1px solid var(--line); border-radius: 12px; background:#0e1730;
+      display:flex; justify-content: space-between; align-items: baseline; gap: 10px;
+    }
+    .metric .k { color: var(--muted); font-size: 12px; }
+    .metric .v { font-size: 18px; font-weight: 750; }
+    .note { color: var(--muted); font-size: 12px; line-height: 1.45; margin-top: 8px; }
+    .error { color:#ffb4b4; font-size: 12px; margin-top: 8px; }
+    footer { max-width: 980px; margin: 0 auto; padding: 8px 16px 20px; color: var(--muted); font-size: 12px; }
+    a { color:#b8c2ff; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Mortgage Calculator</h1>
+    <p>Calculate monthly repayment and the first-payment split between interest and capital. Supports private and shared ownership.</p>
+  </header>
+
+  <main class="grid">
+    <section class="card">
+      <div class="section-title">Inputs</div>
+
+      <div class="row">
+        <div class="field">
+          <label for="price">Property price (£)</label>
+          <input id="price" type="number" min="0" step="1000" value="400000">
+        </div>
+        <div class="field">
+          <label for="downPct">Down payment (%)</label>
+          <input id="downPct" type="number" min="0" max="100" step="0.1" value="10">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="rate">Yearly interest rate (%)</label>
+          <input id="rate" type="number" min="0" step="0.01" value="4.5">
+        </div>
+        <div class="field">
+          <label for="years">Mortgage term (years)</label>
+          <input id="years" type="number" min="1" step="1" value="30">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="type">Payment type</label>
+          <select id="type">
+            <option value="repayment" selected>Repayment (capital + interest)</option>
+            <option value="interestOnly">Interest-only</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="toggle-row" style="margin: 6px 0 10px;">
+        <div>
+          <div style="font-weight:650;">Shared ownership</div>
+          <small>If enabled, the loan is calculated on the owned share only.</small>
+        </div>
+        <label class="switch" aria-label="Shared ownership">
+          <input id="sharedToggle" type="checkbox">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="row" id="ownershipRow" style="display:none;">
+        <div class="field">
+          <label for="ownPct">Ownership (%)</label>
+          <input id="ownPct" type="number" min="1" max="100" step="1" value="50">
+        </div>
+      </div>
+
+      <div class="btns">
+        <button id="calcBtn">Calculate</button>
+        <button id="resetBtn" class="secondary">Reset</button>
+      </div>
+
+      <div id="error" class="error" role="alert" aria-live="polite"></div>
+      <div class="note">
+        Note: For repayment mortgages, the interest/capital split changes every month. This tool shows the <b>first payment</b> split.
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="section-title">Outputs</div>
+      <div class="out">
+        <div class="metric">
+          <div class="k">Monthly repayment</div>
+          <div class="v" id="monthly">—</div>
+        </div>
+        <div class="metric">
+          <div class="k">Interest portion (first payment)</div>
+          <div class="v" id="interest">—</div>
+        </div>
+        <div class="metric">
+          <div class="k">Capital portion (first payment)</div>
+          <div class="v" id="capital">—</div>
+        </div>
+        <div class="metric">
+          <div class="k">Loan principal</div>
+          <div class="v" id="principal">—</div>
+        </div>
+        <div class="metric">
+          <div class="k">Deposit amount</div>
+          <div class="v" id="deposit">—</div>
+        </div>
+      </div>
+
+      <div class="note" id="schemeNote"></div>
+    </section>
+  </main>
+
+  <footer>
+    Disclaimer: This calculator is for informational purposes only and does not constitute financial advice.
+  </footer>
+
+<script>
+  const el = (id) => document.getElementById(id);
+  const fmtGBP = (x) => {
+    if (!isFinite(x)) return "—";
+    return new Intl.NumberFormat("en-GB", { style:"currency", currency:"GBP", maximumFractionDigits: 2 }).format(x);
+  };
+
+  function validateNumber(name, value, {min=-Infinity, max=Infinity}={}) {
+    if (value === "" || value === null || value === undefined || Number.isNaN(value)) {
+      return `${name} is required.`;
+    }
+    if (value < min) return `${name} must be at least ${min}.`;
+    if (value > max) return `${name} must be at most ${max}.`;
+    return null;
+  }
+
+  function calc() {
+    el("error").textContent = "";
+
+    const price = Number(el("price").value);
+    const downPct = Number(el("downPct").value);
+    const rate = Number(el("rate").value);
+    const years = Number(el("years").value);
+    const type = el("type").value;
+
+    const shared = el("sharedToggle").checked;
+    const ownPct = shared ? Number(el("ownPct").value) : 100;
+
+    const errs = [
+      validateNumber("Property price", price, {min:0}),
+      validateNumber("Down payment (%)", downPct, {min:0, max:100}),
+      validateNumber("Yearly interest rate (%)", rate, {min:0}),
+      validateNumber("Mortgage term (years)", years, {min:1}),
+      shared ? validateNumber("Ownership (%)", ownPct, {min:1, max:100}) : null
+    ].filter(Boolean);
+
+    if (errs.length) {
+      el("error").textContent = errs[0];
+      return;
+    }
+
+    // Owned share value
+    const ownedValue = price * (ownPct / 100);
+    const depositAmt = ownedValue * (downPct / 100);
+    const principal = ownedValue - depositAmt;
+
+    if (principal < 0) {
+      el("error").textContent = "Deposit cannot exceed the owned value of the property.";
+      return;
+    }
+
+    const n = Math.round(years * 12);
+    const i = (rate / 100) / 12;
+
+    let monthly = 0;
+    let interestFirst = 0;
+    let capitalFirst = 0;
+
+    if (type === "interestOnly") {
+      monthly = principal * i;
+      interestFirst = monthly;
+      capitalFirst = 0;
+    } else {
+      if (n === 0) {
+        el("error").textContent = "Mortgage term must be at least 1 year.";
+        return;
+      }
+      if (i === 0) {
+        monthly = principal / n;
+      } else {
+        const pow = Math.pow(1 + i, n);
+        monthly = principal * (i * pow) / (pow - 1);
+      }
+      interestFirst = principal * i;
+      capitalFirst = monthly - interestFirst;
+      if (capitalFirst < 0) capitalFirst = 0; // numeric safety
+    }
+
+    el("monthly").textContent = fmtGBP(monthly);
+    el("interest").textContent = fmtGBP(interestFirst);
+    el("capital").textContent = fmtGBP(capitalFirst);
+    el("principal").textContent = fmtGBP(principal);
+    el("deposit").textContent = fmtGBP(depositAmt);
+
+    const schemeText = shared
+      ? `Scheme: Shared ownership (${ownPct}% owned). Calculations are based on the owned share only (no rent on the unowned share included).`
+      : `Scheme: Private property (100% owned).`;
+    el("schemeNote").textContent = schemeText;
+  }
+
+  function reset() {
+    el("price").value = 400000;
+    el("downPct").value = 10;
+    el("rate").value = 4.5;
+    el("years").value = 30;
+    el("type").value = "repayment";
+    el("sharedToggle").checked = false;
+    el("ownPct").value = 50;
+    el("ownershipRow").style.display = "none";
+    el("monthly").textContent = "—";
+    el("interest").textContent = "—";
+    el("capital").textContent = "—";
+    el("principal").textContent = "—";
+    el("deposit").textContent = "—";
+    el("schemeNote").textContent = "";
+    el("error").textContent = "";
+  }
+
+  el("calcBtn").addEventListener("click", calc);
+  el("resetBtn").addEventListener("click", reset);
+
+  el("sharedToggle").addEventListener("change", (e) => {
+    el("ownershipRow").style.display = e.target.checked ? "flex" : "none";
+  });
+
+  // Calculate once on load
+  calc();
+</script>
+</body>
+</html>
