@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Mortgage + Shared Ownership Rent Calculator</title>
   <style>
-    :root { --bg:#0b1220; --card:#111a2e; --text:#e7ecff; --muted:#a7b0d6; --line:#243155; }
+    :root { --bg:#0b1220; --card:#111a2e; --text:#e7ecff; --muted:#a7b0d6; --line:#243155; --link:#b8c2ff; }
     body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background: var(--bg); color: var(--text); }
     header { padding: 24px 16px 8px; max-width: 980px; margin: 0 auto; }
     h1 { margin: 0 0 6px; font-size: 22px; }
@@ -55,11 +55,22 @@
     .note { color: var(--muted); font-size: 12px; line-height: 1.45; margin-top: 8px; }
     .error { color:#ffb4b4; font-size: 12px; margin-top: 8px; }
 
+    a { color: var(--link); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
     /* bottom snapshot section */
     .snap-wrap { max-width: 980px; margin: 0 auto; padding: 0 16px 18px; }
     .snap-title { margin: 10px 0 8px; font-size: 13px; font-weight: 650; color: var(--text); }
     .snap-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     @media (max-width: 860px) { .snap-grid { grid-template-columns: 1fr; } }
+
+    .inline-help {
+      display:flex; justify-content: space-between; align-items: center; gap: 10px;
+      padding: 10px; border: 1px solid var(--line); border-radius: 12px;
+      background:#0e1730; margin-top: 10px;
+    }
+    .inline-help .text { color: var(--muted); font-size: 12px; line-height: 1.4; }
+    .inline-help .cta { font-size: 12px; font-weight: 650; white-space: nowrap; }
   </style>
 </head>
 <body>
@@ -127,6 +138,16 @@
             <input id="rentRatePct" type="number" min="0" step="0.01" value="2.7">
           </div>
         </div>
+
+        <div class="inline-help">
+          <div class="text">
+            Confused why changing ownership % changes your monthly costs? Rent is charged on the <b>unowned</b> portion, and rent is typically “interest-like” (it doesn’t pay down your mortgage balance).
+          </div>
+          <div class="cta">
+            <a href="./shared-ownership-explainer.html">Learn why (with example) →</a>
+          </div>
+        </div>
+
         <div class="note">
           This asks for the <b>annual rent rate</b> charged on the <b>unowned share</b>. Default market assumption is <b>2.7%</b>.
         </div>
@@ -169,6 +190,9 @@
       </div>
 
       <div class="note" id="schemeNote"></div>
+      <div class="note">
+        <a href="./shared-ownership-explainer.html">Why ownership % changes monthly costs →</a>
+      </div>
     </section>
   </main>
 
@@ -247,7 +271,6 @@
     return principal * (monthlyRate * pow) / (pow - 1);
   }
 
-  // Returns { interest, capital } for a specific payment number k (1-indexed) on a repayment mortgage.
   function repaymentSplitAtPayment(principal, monthlyRate, monthlyPayment, k) {
     let balance = principal;
     for (let m = 1; m <= k; m++) {
@@ -318,16 +341,13 @@
       return;
     }
 
-    // Shared rent (monthly)
     const rentMonthly = shared ? calcSharedRentMonthly(price, ownPct, rentRatePct) : 0;
 
-    // Mortgage monthly
     let mortgageMonthly = 0;
 
     if (type === "interestOnly") {
       mortgageMonthly = principal * i;
 
-      // Splits are constant
       const p13 = { interest: mortgageMonthly, capital: 0 };
       const p25 = { interest: mortgageMonthly, capital: 0 };
 
@@ -359,14 +379,12 @@
 
     const totalMonthly = mortgageMonthly + rentMonthly;
 
-    // Main outputs
     el("mortgageMonthly").textContent = fmtGBP(mortgageMonthly);
     el("rentMonthly").textContent = fmtGBP(rentMonthly);
     el("totalMonthly").textContent = fmtGBP(totalMonthly);
     el("principal").textContent = fmtGBP(principal);
     el("deposit").textContent = fmtGBP(depositAmt);
 
-    // Snapshot totals (rent is constant)
     el("p13_rent").textContent = fmtGBP(rentMonthly);
     el("p13_total").textContent = fmtGBP(totalMonthly);
     el("p25_rent").textContent = fmtGBP(rentMonthly);
@@ -405,11 +423,9 @@
 
   el("sharedToggle").addEventListener("change", (e) => {
     el("ownershipBlock").style.display = e.target.checked ? "block" : "none";
-    // Recalculate immediately so outputs update when toggling
     calc();
   });
 
-  // Calculate once on load
   calc();
 </script>
 </body>
