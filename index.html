@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Mortgage Calculator</title>
+  <title>Mortgage + Shared Ownership Rent Calculator</title>
   <style>
     :root { --bg:#0b1220; --card:#111a2e; --text:#e7ecff; --muted:#a7b0d6; --line:#243155; }
     body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background: var(--bg); color: var(--text); }
@@ -54,7 +54,6 @@
     .metric .v { font-size: 18px; font-weight: 750; }
     .note { color: var(--muted); font-size: 12px; line-height: 1.45; margin-top: 8px; }
     .error { color:#ffb4b4; font-size: 12px; margin-top: 8px; }
-    footer { max-width: 980px; margin: 0 auto; padding: 8px 16px 20px; color: var(--muted); font-size: 12px; }
 
     /* bottom snapshot section */
     .snap-wrap { max-width: 980px; margin: 0 auto; padding: 0 16px 18px; }
@@ -66,7 +65,7 @@
 <body>
   <header>
     <h1>Mortgage Calculator</h1>
-    <p>Monthly repayment + interest/capital split. Includes yearly snapshots at the 13th and 25th payment.</p>
+    <p>Monthly mortgage + (optional) shared ownership rent. Shows interest/capital split at the 13th and 25th payments.</p>
   </header>
 
   <main class="grid">
@@ -86,7 +85,7 @@
 
       <div class="row">
         <div class="field">
-          <label for="rate">Yearly interest rate (%)</label>
+          <label for="rate">Yearly mortgage rate (%)</label>
           <input id="rate" type="number" min="0" step="0.01" value="4.5">
         </div>
         <div class="field">
@@ -108,7 +107,7 @@
       <div class="toggle-row" style="margin: 6px 0 10px;">
         <div>
           <div style="font-weight:650;">Shared ownership</div>
-          <small>If enabled, the loan is calculated on the owned share only.</small>
+          <small>If enabled, mortgage is calculated on the owned share; rent is added for the unowned share.</small>
         </div>
         <label class="switch" aria-label="Shared ownership">
           <input id="sharedToggle" type="checkbox">
@@ -116,10 +115,20 @@
         </label>
       </div>
 
-      <div class="row" id="ownershipRow" style="display:none;">
-        <div class="field">
-          <label for="ownPct">Ownership (%)</label>
-          <input id="ownPct" type="number" min="1" max="100" step="1" value="50">
+      <!-- Shared ownership details -->
+      <div id="ownershipBlock" style="display:none;">
+        <div class="row">
+          <div class="field">
+            <label for="ownPct">Ownership (%)</label>
+            <input id="ownPct" type="number" min="1" max="100" step="1" value="50">
+          </div>
+          <div class="field">
+            <label for="rentRatePct">Unowned share rent rate (%)</label>
+            <input id="rentRatePct" type="number" min="0" step="0.01" value="2.7">
+          </div>
+        </div>
+        <div class="note">
+          This asks for the <b>annual rent rate</b> charged on the <b>unowned share</b>. Default market assumption is <b>2.7%</b>.
         </div>
       </div>
 
@@ -130,7 +139,7 @@
 
       <div id="error" class="error" role="alert" aria-live="polite"></div>
       <div class="note">
-        Note: For repayment mortgages, the interest/capital split changes every month. Below you’ll see the 13th and 25th payment splits (start of year 2 and year 3).
+        Note: For repayment mortgages, the interest/capital split changes every month. The snapshots below show the splits at the 13th and 25th mortgage payments.
       </div>
     </section>
 
@@ -138,15 +147,23 @@
       <div class="section-title">Outputs</div>
       <div class="out">
         <div class="metric">
-          <div class="k">Monthly repayment</div>
-          <div class="v" id="monthly">—</div>
+          <div class="k">Mortgage monthly payment</div>
+          <div class="v" id="mortgageMonthly">—</div>
         </div>
         <div class="metric">
-          <div class="k">Loan principal</div>
+          <div class="k">Shared ownership rent (monthly)</div>
+          <div class="v" id="rentMonthly">—</div>
+        </div>
+        <div class="metric">
+          <div class="k">Total monthly outpay (mortgage + rent)</div>
+          <div class="v" id="totalMonthly">—</div>
+        </div>
+        <div class="metric">
+          <div class="k">Loan principal (owned share)</div>
           <div class="v" id="principal">—</div>
         </div>
         <div class="metric">
-          <div class="k">Deposit amount</div>
+          <div class="k">Deposit amount (owned share)</div>
           <div class="v" id="deposit">—</div>
         </div>
       </div>
@@ -155,34 +172,50 @@
     </section>
   </main>
 
-  <!-- Bottom-of-page yearly snapshots -->
+  <!-- Bottom-of-page snapshots -->
   <div class="snap-wrap">
-    <div class="snap-title">Yearly change snapshots (payment split)</div>
+    <div class="snap-title">Yearly change snapshots (mortgage split + total outpay)</div>
     <div class="snap-grid">
       <div class="card">
-        <div class="section-title">13th payment (start of year 2)</div>
+        <div class="section-title">13th mortgage payment (start of year 2)</div>
         <div class="out">
           <div class="metric">
-            <div class="k">Interest</div>
+            <div class="k">Mortgage interest</div>
             <div class="v" id="p13_interest">—</div>
           </div>
           <div class="metric">
-            <div class="k">Capital</div>
+            <div class="k">Mortgage capital</div>
             <div class="v" id="p13_capital">—</div>
+          </div>
+          <div class="metric">
+            <div class="k">Rent (monthly)</div>
+            <div class="v" id="p13_rent">—</div>
+          </div>
+          <div class="metric">
+            <div class="k">Total outpay (monthly)</div>
+            <div class="v" id="p13_total">—</div>
           </div>
         </div>
       </div>
 
       <div class="card">
-        <div class="section-title">25th payment (start of year 3)</div>
+        <div class="section-title">25th mortgage payment (start of year 3)</div>
         <div class="out">
           <div class="metric">
-            <div class="k">Interest</div>
+            <div class="k">Mortgage interest</div>
             <div class="v" id="p25_interest">—</div>
           </div>
           <div class="metric">
-            <div class="k">Capital</div>
+            <div class="k">Mortgage capital</div>
             <div class="v" id="p25_capital">—</div>
+          </div>
+          <div class="metric">
+            <div class="k">Rent (monthly)</div>
+            <div class="v" id="p25_rent">—</div>
+          </div>
+          <div class="metric">
+            <div class="k">Total outpay (monthly)</div>
+            <div class="v" id="p25_total">—</div>
           </div>
         </div>
       </div>
@@ -216,15 +249,11 @@
 
   // Returns { interest, capital } for a specific payment number k (1-indexed) on a repayment mortgage.
   function repaymentSplitAtPayment(principal, monthlyRate, monthlyPayment, k) {
-    // Iterate balance month-by-month until reaching k.
-    // For k up to 25 this is tiny cost and very simple/robust.
     let balance = principal;
-
     for (let m = 1; m <= k; m++) {
       const interest = balance * monthlyRate;
       const capital = Math.max(0, monthlyPayment - interest);
       balance = Math.max(0, balance - capital);
-
       if (m === k) return { interest, capital };
       if (balance <= 0) return { interest: 0, capital: 0 };
     }
@@ -232,10 +261,14 @@
   }
 
   function setSnapshotsToDash() {
-    el("p13_interest").textContent = "—";
-    el("p13_capital").textContent = "—";
-    el("p25_interest").textContent = "—";
-    el("p25_capital").textContent = "—";
+    ["p13_interest","p13_capital","p13_rent","p13_total","p25_interest","p25_capital","p25_rent","p25_total"]
+      .forEach(id => el(id).textContent = "—");
+  }
+
+  function calcSharedRentMonthly(propertyPrice, ownershipPct, rentRatePct) {
+    const unownedValue = propertyPrice * (1 - (ownershipPct / 100));
+    const annualRent = unownedValue * (rentRatePct / 100);
+    return annualRent / 12;
   }
 
   function calc() {
@@ -249,13 +282,15 @@
 
     const shared = el("sharedToggle").checked;
     const ownPct = shared ? Number(el("ownPct").value) : 100;
+    const rentRatePct = shared ? Number(el("rentRatePct").value) : 0;
 
     const errs = [
       validateNumber("Property price", price, {min:0}),
       validateNumber("Down payment (%)", downPct, {min:0, max:100}),
-      validateNumber("Yearly interest rate (%)", rate, {min:0}),
+      validateNumber("Yearly mortgage rate (%)", rate, {min:0}),
       validateNumber("Mortgage term (years)", years, {min:1}),
-      shared ? validateNumber("Ownership (%)", ownPct, {min:1, max:100}) : null
+      shared ? validateNumber("Ownership (%)", ownPct, {min:1, max:100}) : null,
+      shared ? validateNumber("Unowned share rent rate (%)", rentRatePct, {min:0, max:100}) : null
     ].filter(Boolean);
 
     if (errs.length) {
@@ -283,25 +318,28 @@
       return;
     }
 
-    let monthly = 0;
+    // Shared rent (monthly)
+    const rentMonthly = shared ? calcSharedRentMonthly(price, ownPct, rentRatePct) : 0;
+
+    // Mortgage monthly
+    let mortgageMonthly = 0;
 
     if (type === "interestOnly") {
-      monthly = principal * i;
+      mortgageMonthly = principal * i;
 
-      // For interest-only, split is constant every month
-      const p13 = { interest: monthly, capital: 0 };
-      const p25 = { interest: monthly, capital: 0 };
+      // Splits are constant
+      const p13 = { interest: mortgageMonthly, capital: 0 };
+      const p25 = { interest: mortgageMonthly, capital: 0 };
 
       el("p13_interest").textContent = fmtGBP(p13.interest);
       el("p13_capital").textContent  = fmtGBP(p13.capital);
       el("p25_interest").textContent = fmtGBP(p25.interest);
       el("p25_capital").textContent  = fmtGBP(p25.capital);
     } else {
-      monthly = repaymentMonthlyPayment(principal, i, n);
+      mortgageMonthly = repaymentMonthlyPayment(principal, i, n);
 
-      // If term is shorter than 13/25 payments, show dashes for out-of-range
       if (n >= 13) {
-        const s13 = repaymentSplitAtPayment(principal, i, monthly, 13);
+        const s13 = repaymentSplitAtPayment(principal, i, mortgageMonthly, 13);
         el("p13_interest").textContent = fmtGBP(s13.interest);
         el("p13_capital").textContent  = fmtGBP(s13.capital);
       } else {
@@ -310,7 +348,7 @@
       }
 
       if (n >= 25) {
-        const s25 = repaymentSplitAtPayment(principal, i, monthly, 25);
+        const s25 = repaymentSplitAtPayment(principal, i, mortgageMonthly, 25);
         el("p25_interest").textContent = fmtGBP(s25.interest);
         el("p25_capital").textContent  = fmtGBP(s25.capital);
       } else {
@@ -319,12 +357,23 @@
       }
     }
 
-    el("monthly").textContent = fmtGBP(monthly);
+    const totalMonthly = mortgageMonthly + rentMonthly;
+
+    // Main outputs
+    el("mortgageMonthly").textContent = fmtGBP(mortgageMonthly);
+    el("rentMonthly").textContent = fmtGBP(rentMonthly);
+    el("totalMonthly").textContent = fmtGBP(totalMonthly);
     el("principal").textContent = fmtGBP(principal);
     el("deposit").textContent = fmtGBP(depositAmt);
 
+    // Snapshot totals (rent is constant)
+    el("p13_rent").textContent = fmtGBP(rentMonthly);
+    el("p13_total").textContent = fmtGBP(totalMonthly);
+    el("p25_rent").textContent = fmtGBP(rentMonthly);
+    el("p25_total").textContent = fmtGBP(totalMonthly);
+
     const schemeText = shared
-      ? `Scheme: Shared ownership (${ownPct}% owned). Calculations are based on the owned share only (no rent on the unowned share included).`
+      ? `Scheme: Shared ownership (${ownPct}% owned). Mortgage is based on the owned share loan; rent is added for the unowned share using a rent rate of ${rentRatePct}%.`
       : `Scheme: Private property (100% owned).`;
     el("schemeNote").textContent = schemeText;
   }
@@ -336,10 +385,14 @@
     el("years").value = 30;
     el("type").value = "repayment";
     el("sharedToggle").checked = false;
-    el("ownPct").value = 50;
-    el("ownershipRow").style.display = "none";
 
-    el("monthly").textContent = "—";
+    el("ownPct").value = 50;
+    el("rentRatePct").value = 2.7;
+    el("ownershipBlock").style.display = "none";
+
+    el("mortgageMonthly").textContent = "—";
+    el("rentMonthly").textContent = "—";
+    el("totalMonthly").textContent = "—";
     el("principal").textContent = "—";
     el("deposit").textContent = "—";
     el("schemeNote").textContent = "";
@@ -351,7 +404,9 @@
   el("resetBtn").addEventListener("click", reset);
 
   el("sharedToggle").addEventListener("change", (e) => {
-    el("ownershipRow").style.display = e.target.checked ? "flex" : "none";
+    el("ownershipBlock").style.display = e.target.checked ? "block" : "none";
+    // Recalculate immediately so outputs update when toggling
+    calc();
   });
 
   // Calculate once on load
