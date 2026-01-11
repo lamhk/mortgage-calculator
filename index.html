@@ -55,13 +55,18 @@
     .note { color: var(--muted); font-size: 12px; line-height: 1.45; margin-top: 8px; }
     .error { color:#ffb4b4; font-size: 12px; margin-top: 8px; }
     footer { max-width: 980px; margin: 0 auto; padding: 8px 16px 20px; color: var(--muted); font-size: 12px; }
-    a { color:#b8c2ff; }
+
+    /* bottom snapshot section */
+    .snap-wrap { max-width: 980px; margin: 0 auto; padding: 0 16px 18px; }
+    .snap-title { margin: 10px 0 8px; font-size: 13px; font-weight: 650; color: var(--text); }
+    .snap-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 860px) { .snap-grid { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
   <header>
     <h1>Mortgage Calculator</h1>
-    <p>Calculate monthly repayment and the first-payment split between interest and capital. Supports private and shared ownership.</p>
+    <p>Monthly repayment + interest/capital split. Includes yearly snapshots at the 13th and 25th payment.</p>
   </header>
 
   <main class="grid">
@@ -125,7 +130,7 @@
 
       <div id="error" class="error" role="alert" aria-live="polite"></div>
       <div class="note">
-        Note: For repayment mortgages, the interest/capital split changes every month. This tool shows the <b>first payment</b> split.
+        Note: For repayment mortgages, the interest/capital split changes every month. Below you’ll see the 13th and 25th payment splits (start of year 2 and year 3).
       </div>
     </section>
 
@@ -135,14 +140,6 @@
         <div class="metric">
           <div class="k">Monthly repayment</div>
           <div class="v" id="monthly">—</div>
-        </div>
-        <div class="metric">
-          <div class="k">Interest portion (first payment)</div>
-          <div class="v" id="interest">—</div>
-        </div>
-        <div class="metric">
-          <div class="k">Capital portion (first payment)</div>
-          <div class="v" id="capital">—</div>
         </div>
         <div class="metric">
           <div class="k">Loan principal</div>
@@ -158,9 +155,43 @@
     </section>
   </main>
 
-  <footer>
-    Disclaimer: This calculator is for informational purposes only and does not constitute financial advice.
-  </footer>
+  <!-- Bottom-of-page yearly snapshots -->
+  <div class="snap-wrap">
+    <div class="snap-title">Yearly change snapshots (payment split)</div>
+    <div class="snap-grid">
+      <div class="card">
+        <div class="section-title">13th payment (start of year 2)</div>
+        <div class="out">
+          <div class="metric">
+            <div class="k">Interest</div>
+            <div class="v" id="p13_interest">—</div>
+          </div>
+          <div class="metric">
+            <div class="k">Capital</div>
+            <div class="v" id="p13_capital">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">25th payment (start of year 3)</div>
+        <div class="out">
+          <div class="metric">
+            <div class="k">Interest</div>
+            <div class="v" id="p25_interest">—</div>
+          </div>
+          <div class="metric">
+            <div class="k">Capital</div>
+            <div class="v" id="p25_capital">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="note" style="margin-top:10px;">
+      Disclaimer: This calculator is for informational purposes only and does not constitute financial advice.
+    </div>
+  </div>
 
 <script>
   const el = (id) => document.getElementById(id);
@@ -170,12 +201,41 @@
   };
 
   function validateNumber(name, value, {min=-Infinity, max=Infinity}={}) {
-    if (value === "" || value === null || value === undefined || Number.isNaN(value)) {
-      return `${name} is required.`;
-    }
+    if (value === "" || value === null || value === undefined || Number.isNaN(value)) return `${name} is required.`;
     if (value < min) return `${name} must be at least ${min}.`;
     if (value > max) return `${name} must be at most ${max}.`;
     return null;
+  }
+
+  function repaymentMonthlyPayment(principal, monthlyRate, n) {
+    if (n <= 0) return NaN;
+    if (monthlyRate === 0) return principal / n;
+    const pow = Math.pow(1 + monthlyRate, n);
+    return principal * (monthlyRate * pow) / (pow - 1);
+  }
+
+  // Returns { interest, capital } for a specific payment number k (1-indexed) on a repayment mortgage.
+  function repaymentSplitAtPayment(principal, monthlyRate, monthlyPayment, k) {
+    // Iterate balance month-by-month until reaching k.
+    // For k up to 25 this is tiny cost and very simple/robust.
+    let balance = principal;
+
+    for (let m = 1; m <= k; m++) {
+      const interest = balance * monthlyRate;
+      const capital = Math.max(0, monthlyPayment - interest);
+      balance = Math.max(0, balance - capital);
+
+      if (m === k) return { interest, capital };
+      if (balance <= 0) return { interest: 0, capital: 0 };
+    }
+    return { interest: 0, capital: 0 };
+  }
+
+  function setSnapshotsToDash() {
+    el("p13_interest").textContent = "—";
+    el("p13_capital").textContent = "—";
+    el("p25_interest").textContent = "—";
+    el("p25_capital").textContent = "—";
   }
 
   function calc() {
@@ -200,49 +260,66 @@
 
     if (errs.length) {
       el("error").textContent = errs[0];
+      setSnapshotsToDash();
       return;
     }
 
-    // Owned share value
     const ownedValue = price * (ownPct / 100);
     const depositAmt = ownedValue * (downPct / 100);
     const principal = ownedValue - depositAmt;
 
     if (principal < 0) {
       el("error").textContent = "Deposit cannot exceed the owned value of the property.";
+      setSnapshotsToDash();
       return;
     }
 
     const n = Math.round(years * 12);
     const i = (rate / 100) / 12;
 
+    if (n < 1) {
+      el("error").textContent = "Mortgage term must be at least 1 year.";
+      setSnapshotsToDash();
+      return;
+    }
+
     let monthly = 0;
-    let interestFirst = 0;
-    let capitalFirst = 0;
 
     if (type === "interestOnly") {
       monthly = principal * i;
-      interestFirst = monthly;
-      capitalFirst = 0;
+
+      // For interest-only, split is constant every month
+      const p13 = { interest: monthly, capital: 0 };
+      const p25 = { interest: monthly, capital: 0 };
+
+      el("p13_interest").textContent = fmtGBP(p13.interest);
+      el("p13_capital").textContent  = fmtGBP(p13.capital);
+      el("p25_interest").textContent = fmtGBP(p25.interest);
+      el("p25_capital").textContent  = fmtGBP(p25.capital);
     } else {
-      if (n === 0) {
-        el("error").textContent = "Mortgage term must be at least 1 year.";
-        return;
-      }
-      if (i === 0) {
-        monthly = principal / n;
+      monthly = repaymentMonthlyPayment(principal, i, n);
+
+      // If term is shorter than 13/25 payments, show dashes for out-of-range
+      if (n >= 13) {
+        const s13 = repaymentSplitAtPayment(principal, i, monthly, 13);
+        el("p13_interest").textContent = fmtGBP(s13.interest);
+        el("p13_capital").textContent  = fmtGBP(s13.capital);
       } else {
-        const pow = Math.pow(1 + i, n);
-        monthly = principal * (i * pow) / (pow - 1);
+        el("p13_interest").textContent = "—";
+        el("p13_capital").textContent  = "—";
       }
-      interestFirst = principal * i;
-      capitalFirst = monthly - interestFirst;
-      if (capitalFirst < 0) capitalFirst = 0; // numeric safety
+
+      if (n >= 25) {
+        const s25 = repaymentSplitAtPayment(principal, i, monthly, 25);
+        el("p25_interest").textContent = fmtGBP(s25.interest);
+        el("p25_capital").textContent  = fmtGBP(s25.capital);
+      } else {
+        el("p25_interest").textContent = "—";
+        el("p25_capital").textContent  = "—";
+      }
     }
 
     el("monthly").textContent = fmtGBP(monthly);
-    el("interest").textContent = fmtGBP(interestFirst);
-    el("capital").textContent = fmtGBP(capitalFirst);
     el("principal").textContent = fmtGBP(principal);
     el("deposit").textContent = fmtGBP(depositAmt);
 
@@ -261,13 +338,13 @@
     el("sharedToggle").checked = false;
     el("ownPct").value = 50;
     el("ownershipRow").style.display = "none";
+
     el("monthly").textContent = "—";
-    el("interest").textContent = "—";
-    el("capital").textContent = "—";
     el("principal").textContent = "—";
     el("deposit").textContent = "—";
     el("schemeNote").textContent = "";
     el("error").textContent = "";
+    setSnapshotsToDash();
   }
 
   el("calcBtn").addEventListener("click", calc);
