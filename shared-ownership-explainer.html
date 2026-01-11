@@ -13,10 +13,6 @@
     h2 { margin: 18px 0 8px; font-size: 16px; }
     p, li { color: var(--muted); line-height: 1.55; font-size: 14px; }
     .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px; margin-top: 12px; }
-    .example { display:grid; gap: 10px; }
-    .row { display:flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 10px; border: 1px solid var(--line); border-radius: 12px; background:#0e1730; }
-    .k { color: var(--muted); font-size: 12px; }
-    .v { font-weight: 750; color: var(--text); }
     a { color: var(--link); text-decoration: none; }
     a:hover { text-decoration: underline; }
     .small { font-size: 12px; color: var(--muted); }
@@ -26,97 +22,42 @@
 <body>
   <header>
     <div class="pill">Shared Ownership explainer</div>
-    <h1>Why increasing ownership % can change your monthly cost</h1>
-    <p><a href="./index.html">← Back to the calculator</a></p>
+    <h1>Why increasing ownership % changes your monthly cost</h1>
+    <p><a id="backLink" href="./index.html">← Back to the calculator</a></p>
   </header>
 
   <main>
     <div class="card">
       <h2>The simple idea</h2>
-      <p>
-        In shared ownership, you usually pay two things each month:
-      </p>
+      <p>In shared ownership, you usually pay two things each month:</p>
       <ul>
-        <li><b>Mortgage payment</b> on the share you own (this can include interest + capital repayment if you choose repayment).</li>
-        <li><b>Rent</b> on the share you don’t own (this is typically like “interest-only” — it doesn’t reduce a mortgage balance because you don’t own that part yet).</li>
+        <li><b>Mortgage payment</b> on the share you own (repayment or interest-only).</li>
+        <li><b>Rent</b> on the share you don’t own (often “interest-like” — it doesn’t reduce your mortgage balance because you don’t own that part yet).</li>
       </ul>
-      <p>
-        So your monthly cost isn’t just “mortgage vs mortgage” — it’s <b>mortgage + rent</b>.
-      </p>
+      <p>So your monthly cost is often <b>mortgage + rent</b>, not just mortgage.</p>
     </div>
 
     <div class="card">
       <h2>Why rent feels like “interest-only”</h2>
       <p>
-        With a normal repayment mortgage, part of your payment reduces the amount you owe (capital repayment). Over time, that means:
-        you build equity and your interest portion typically shrinks.
-      </p>
-      <p>
-        Rent on the unowned share is different: it’s a fee for using the part of the property owned by the housing provider/landlord.
-        Paying rent doesn’t pay down a loan balance in your name for that share — so it can feel like an “interest-only” component.
+        With a repayment mortgage, part of each payment reduces what you owe (capital repayment), so you build equity over time.
+        Rent on the unowned share is different: it’s a fee for using the landlord’s share, so it usually doesn’t pay down a loan balance in your name.
       </p>
     </div>
 
     <div class="card">
-      <h2>Layman example (same home, different ownership)</h2>
-      <p class="small">
-        This is an educational example to build intuition. Real offers vary by lender, scheme rules, service charges, fees, and rent review clauses.
-      </p>
-
-      <div class="example">
-        <div class="row">
-          <div class="k">Home value</div>
-          <div class="v">£400,000</div>
-        </div>
-        <div class="row">
-          <div class="k">Mortgage rate / term</div>
-          <div class="v">4.5% / 30 years</div>
-        </div>
-        <div class="row">
-          <div class="k">Deposit on owned share</div>
-          <div class="v">10%</div>
-        </div>
-        <div class="row">
-          <div class="k">Rent rate on unowned share (annual)</div>
-          <div class="v">2.7%</div>
-        </div>
-      </div>
-
-      <h2 style="margin-top:18px;">Scenario A: You own 50%</h2>
+      <h2>Pros and cons of higher vs lower ownership</h2>
+      <p><b>Higher ownership</b></p>
       <ul>
-        <li>You mortgage the <b>owned</b> half (after deposit).</li>
-        <li>You pay rent on the <b>unowned</b> half.</li>
+        <li><b>Pros:</b> Less rent exposure (smaller unowned share).</li>
+        <li><b>Pros:</b> More of your outgo can build equity (if repayment mortgage).</li>
+        <li><b>Cons:</b> Larger mortgage needed; affordability may be tighter.</li>
       </ul>
 
-      <h2>Scenario B: You own 75%</h2>
+      <p><b>Lower ownership</b></p>
       <ul>
-        <li>You mortgage a <b>bigger</b> owned share (after deposit) → mortgage payment usually increases.</li>
-        <li>You pay rent on a <b>smaller</b> unowned share → rent usually decreases.</li>
-      </ul>
-
-      <p>
-        Whether your <b>total monthly outpay</b> goes up or down depends on how these two parts trade off:
-        mortgage interest rate vs rent rate, term, deposit, and the ownership %.
-      </p>
-    </div>
-
-    <div class="card">
-      <h2>Pros and cons of higher ownership %</h2>
-
-      <p><b>Higher ownership (e.g., 75% vs 50%)</b></p>
-      <ul>
-        <li><b>Pros:</b> Less rent exposure (rent is charged on a smaller unowned share).</li>
-        <li><b>Pros:</b> More of your monthly payment can go toward <b>building equity</b> (if you’re on a repayment mortgage).</li>
-        <li><b>Cons:</b> You usually need a larger mortgage (and/or deposit), increasing affordability pressure.</li>
-        <li><b>Cons:</b> You take on more exposure to interest-rate changes on a larger loan amount.</li>
-      </ul>
-
-      <p><b>Lower ownership (e.g., 25%–50%)</b></p>
-      <ul>
-        <li><b>Pros:</b> Smaller mortgage needed upfront, which may improve initial affordability.</li>
-        <li><b>Pros:</b> Lower deposit requirement in absolute £ terms (because it’s applied to a smaller owned share).</li>
-        <li><b>Cons:</b> Higher rent exposure (charged on a larger unowned share), and rent doesn’t reduce a loan balance.</li>
-        <li><b>Cons:</b> You may build equity more slowly (because a bigger part of your monthly outgo is rent).</li>
+        <li><b>Pros:</b> Smaller mortgage needed upfront; may help affordability.</li>
+        <li><b>Cons:</b> Higher rent exposure and rent doesn’t reduce your mortgage balance.</li>
       </ul>
     </div>
 
@@ -124,17 +65,30 @@
       <h2>Important disclaimers</h2>
       <ul>
         <li>This page is for <b>information only</b> and does not constitute financial advice.</li>
-        <li>Shared ownership often includes other costs not modelled here (e.g., <b>service charges</b>, insurance, fees).</li>
-        <li>Rent may increase over time (for example, linked to inflation or scheme rules).</li>
-        <li>Different lenders and schemes have different eligibility and affordability assessments.</li>
+        <li>Shared ownership can include other costs not modelled here (service charges, fees, insurance).</li>
+        <li>Rent may increase over time depending on scheme rules.</li>
       </ul>
 
-      <p class="small">
-        Always check the specific shared ownership lease terms and speak to a qualified adviser if needed.
-      </p>
-
-      <p><a href="./index.html">← Back to the calculator</a></p>
+      <p><a id="backLinkBottom" href="./index.html">← Back to the calculator</a></p>
     </div>
   </main>
+
+<script>
+  function getQueryParam(name) {
+    const u = new URL(window.location.href);
+    return u.searchParams.get(name);
+  }
+  function setQueryParam(url, key, value) {
+    const u = new URL(url, window.location.origin);
+    if (value) u.searchParams.set(key, value);
+    return u.pathname + u.search;
+  }
+
+  // Preserve calculator state in Back links
+  const state = getQueryParam("state");
+  const backHref = state ? setQueryParam("./index.html", "state", state) : "./index.html";
+  document.getElementById("backLink").setAttribute("href", backHref);
+  document.getElementById("backLinkBottom").setAttribute("href", backHref);
+</script>
 </body>
 </html>
