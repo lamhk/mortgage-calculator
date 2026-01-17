@@ -10,6 +10,25 @@
     header { padding: 24px 16px 8px; max-width: 980px; margin: 0 auto; }
     h1 { margin: 0 0 6px; font-size: 22px; }
     p  { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.4; }
+
+    /* NAV / TABS (Change #2) */
+    .nav { max-width: 980px; margin: 0 auto; padding: 0 16px; }
+    .tabs { display:flex; gap: 8px; flex-wrap: wrap; margin: 10px 0 0; }
+    .tab {
+      border: 1px solid var(--line);
+      background: #0e1730;
+      color: var(--text);
+      padding: 8px 10px;
+      border-radius: 999px;
+      font-size: 13px;
+      text-decoration: none;
+      display:inline-flex;
+      align-items:center;
+      gap: 6px;
+    }
+    .tab.active { background: #2b3fff; border-color: #2b3fff; }
+    .tab:hover { filter: brightness(1.08); text-decoration: none; }
+
     main { max-width: 980px; margin: 0 auto; padding: 16px; }
     .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
     @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
@@ -77,6 +96,17 @@
     <h1>Mortgage Calculator</h1>
     <p>Monthly mortgage + (optional) shared ownership rent. Keeps your inputs when you open the explainer page (no cookies).</p>
   </header>
+
+  <!-- NAV / TABS (Change #2) -->
+  <div class="nav">
+    <div class="tabs" role="navigation" aria-label="Site sections">
+      <a class="tab active" href="./index.html">Calculator</a>
+      <a class="tab" href="./shared-ownership-explainer.html">Shared ownership explained</a>
+      <a class="tab" href="./blog.html">Blog</a>
+      <a class="tab" href="./news.html">News</a>
+      <a class="tab" href="./articles.html">Articles</a>
+    </div>
+  </div>
 
   <main class="grid">
     <section class="card">
@@ -218,8 +248,11 @@
       </div>
     </div>
 
+    <!-- DISCLAIMER + COPYRIGHT (Change #1) -->
     <div class="note" style="margin-top:10px;">
-      Disclaimer: This calculator is for informational purposes only and does not constitute financial advice.
+      Disclaimer (2026): This calculator and accompanying explanations are for general information only and do not constitute financial, legal, or tax advice. Figures are estimates; always verify with your lender / housing association and a qualified adviser before making decisions.
+      <br><br>
+      © 2026 Mortgage-Cal. All rights reserved. Content is provided “as is” without warranties. Use at your own risk.
     </div>
   </div>
 
@@ -465,6 +498,8 @@
       node.addEventListener(evt, () => {
         if (id === "sharedToggle") {
           el("ownershipBlock").style.display = node.checked ? "block" : "none";
+          // keep explainer links consistent when toggling shared ownership
+          syncExplainerLinks();
         }
         calc();
       });
