@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Mortgage + Shared Ownership Rent Calculator</title>
   <style>
-    :root { --bg:#0b1220; --card:#111a2e; --text:#e7ecff; --muted:#a7b0d6; --line:#243155; --link:#b8c2ff; }
+    :root { --bg:#0b1220; --card:#111a2e; --text:#e7ecff; --muted:#a7b0d6; --line:#243155; --link:#b8c2ff; --inputBg:#0b2447; --inputBorder:#355a9a; }
     body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background: var(--bg); color: var(--text); }
     header { padding: 24px 16px 8px; max-width: 980px; margin: 0 auto; }
     h1 { margin: 0 0 6px; font-size: 22px; }
@@ -53,11 +53,12 @@
     .field { flex: 1 1 190px; display:flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
     label { font-size: 12px; color: var(--muted); }
     input, select {
-      background: #0e1730; color: var(--text);
-      border: 1px solid var(--line); border-radius: 10px;
+      background: var(--inputBg); color: var(--text);
+      border: 1px solid var(--inputBorder); border-radius: 10px;
       padding: 10px 10px; font-size: 14px; outline: none;
     }
-    input:focus, select:focus { border-color: #4d68ff; box-shadow: 0 0 0 3px rgba(77,104,255,.18); }
+    input::placeholder { color: rgba(231,236,255,.55); }
+    input:focus, select:focus { border-color: #7aa2ff; box-shadow: 0 0 0 3px rgba(122,162,255,.22); }
 
     .toggle-row { display:flex; align-items:center; justify-content: space-between; gap: 10px; padding: 10px; border: 1px dashed var(--line); border-radius: 12px; background:#0e1730; }
     .toggle-row small { color: var(--muted); display:block; margin-top: 2px; }
