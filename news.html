@@ -5,16 +5,20 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>News | Mortgage Calculator</title>
   <style>
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 24px; line-height: 1.65; color:#111; max-width: 980px; }
-    a { color:#1a56db; }
+    :root { --bg:#0b1220; --card:#111a2e; --text:#e7ecff; --muted:#a7b0d6; --line:#243155; --link:#b8c2ff; --inputBg:#0b2447; --inputBorder:#355a9a; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 24px; line-height: 1.65; background: var(--bg); color: var(--text); max-width: 980px; }
+    a { color: var(--link); }
+    a:hover { text-decoration: underline; }
     h1 { margin: 0 0 10px; }
-    .card { border:1px solid #e5e7eb; border-radius: 12px; padding: 14px 16px; margin: 14px 0; background:#fff; }
-    .k { color:#555; font-size: 0.95rem; }
-    .meta { color:#444; font-size: 0.95rem; margin: 0 0 10px; }
-    .pill { display:inline-block; padding: 2px 8px; border-radius: 999px; font-size: 0.8rem; background:#eef2ff; color:#3730a3; border:1px solid #e0e7ff; }
+    h2 { margin: 6px 0 10px; }
+    h3 { margin: 14px 0 8px; }
+    .meta { color: var(--muted); font-size: 0.95rem; margin: 0 0 12px; }
+    .k { color: var(--muted); font-size: 0.95rem; }
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; margin: 14px 0; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+    .pill { display:inline-block; padding: 2px 8px; border-radius: 999px; font-size: 0.8rem; background:#0e1730; color: var(--text); border:1px solid var(--line); }
     ul { margin: 8px 0 0 18px; }
-    .note { color:#555; font-size: 0.92rem; margin-top: 10px; }
-    .disclaimer { color:#6b7280; font-size: 0.9rem; margin-top: 18px; }
+    .note { color: var(--muted); font-size: 0.92rem; margin-top: 10px; }
+    .disclaimer { color: var(--muted); font-size: 0.9rem; margin-top: 18px; }
   </style>
 </head>
 <body>
