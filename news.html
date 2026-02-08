@@ -1,7 +1,62 @@
-<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>News | Mortgage-Cal</title>
-<body style="font-family:system-ui;margin:24px;line-height:1.5">
-  <p><a href="./index.html">← Back</a></p>
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>News | Mortgage Calculator</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 24px; line-height: 1.65; color:#111; max-width: 980px; }
+    a { color:#1a56db; }
+    h1 { margin: 0 0 10px; }
+    .card { border:1px solid #e5e7eb; border-radius: 12px; padding: 14px 16px; margin: 14px 0; background:#fff; }
+    .k { color:#555; font-size: 0.95rem; }
+    .meta { color:#444; font-size: 0.95rem; margin: 0 0 10px; }
+    .pill { display:inline-block; padding: 2px 8px; border-radius: 999px; font-size: 0.8rem; background:#eef2ff; color:#3730a3; border:1px solid #e0e7ff; }
+    ul { margin: 8px 0 0 18px; }
+    .note { color:#555; font-size: 0.92rem; margin-top: 10px; }
+    .disclaimer { color:#6b7280; font-size: 0.9rem; margin-top: 18px; }
+  </style>
+</head>
+<body>
+  <p><a href="./index.html">&larr; Back to Calculator</a></p>
   <h1>News</h1>
-  <p>Coming soon.</p>
-</body></html>
+  <p class="meta">UK rate updates and plain-English market commentary (general information only).</p>
+
+  <section class="card" aria-label="Bank of England Bank Rate update">
+    <p class="k"><span class="pill">Bank of England</span></p>
+    <h2 style="margin:6px 0 8px; font-size:1.25rem;">Bank Rate held at <strong>3.75%</strong></h2>
+    <p class="meta">Decision date: <time datetime="2026-02-05">5 Feb 2026</time> · Next due: <time datetime="2026-03-19">19 Mar 2026</time></p>
+
+    <p class="k" style="margin:0 0 8px;">
+      Summary (from the BoE): rates were held after a series of cuts since Aug 2024; inflation has fallen significantly from its peak and is expected to return to the 2% target in spring. The MPC noted there may be scope for further cuts this year if the outlook evolves as expected.
+    </p>
+
+    <p class="k" style="margin:0;">Source: <a href="https://www.bankofengland.co.uk/monetary-policy/the-interest-rate-bank-rate" target="_blank" rel="noopener">Bank of England – Interest rates and Bank Rate: our latest decision</a></p>
+  </section>
+
+  <section class="card" aria-label="Market commentary">
+    <h2 style="margin:0 0 8px; font-size:1.25rem;">Market commentary (what it can mean for borrowers)</h2>
+    <ul>
+      <li><strong>Tracker mortgages:</strong> usually move broadly with Bank Rate. A “hold” typically means tracker payments are <strong>unlikely to change immediately</strong> (unless your lender changes margins/fees).</li>
+      <li><strong>Fixed-rate mortgages:</strong> are driven more by market expectations (swap rates) than today’s decision alone. If markets expect further cuts, fixed rates can ease <strong>before</strong> the Bank actually cuts.</li>
+      <li><strong>Remortgaging timing:</strong> if your deal ends soon, it’s worth comparing a product transfer vs switching lender, and checking any fees/early repayment charges. Small rate differences can be offset by fees.</li>
+      <li><strong>Affordability:</strong> lenders still assess affordability with buffers. Even if rates trend down, approval depends on income, commitments, and credit history.</li>
+    </ul>
+
+    <h3 style="margin:14px 0 8px; font-size:1.05rem;">What to watch next</h3>
+    <ul>
+      <li>Upcoming MPC decision: <strong>19 March 2026</strong></li>
+      <li>Inflation and wage/labour-market data (these influence the path of future cuts/holds)</li>
+      <li>Average quoted fixed rates from major lenders (what consumers actually pay)</li>
+    </ul>
+
+    <p class="note">
+      If you want, tell me your scenario (first-time buyer vs remortgage, fixed vs tracker, when your current deal ends) and I can suggest what numbers to compare (rate, fee, ERC, total cost) — without giving personalised financial advice.
+    </p>
+  </section>
+
+  <p class="disclaimer">
+    Disclaimer: This page is for general information and does not constitute financial, legal, or tax advice. Rates, products, and eligibility vary by lender and can change quickly. Always check official sources and consider speaking with a regulated mortgage adviser.
+  </p>
+</body>
+</html>
