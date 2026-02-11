@@ -171,6 +171,21 @@
             <option value="interestOnly">Interest-only</option>
           </select>
         </div>
+        <div class="field">
+          <label for="frequency">Repayment frequency</label>
+          <select id="frequency">
+            <option value="monthly" selected>Monthly</option>
+            <option value="fortnightly">Fortnightly</option>
+            <option value="weekly">Weekly</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="offsetBalance">Offset balance (£)</label>
+          <input id="offsetBalance" type="number" min="0" step="100" value="0">
+        </div>
       </div>
 
       <div class="toggle-row" style="margin: 6px 0 10px;">
@@ -225,16 +240,16 @@
       <div class="section-title">Outputs</div>
       <div class="out">
         <div class="metric">
-          <div class="k">Mortgage monthly payment</div>
-          <div class="v" id="mortgageMonthly">—</div>
+          <div class="k">Mortgage payment (per selected frequency)</div>
+          <div class="v" id="mortgagePayment">—</div>
         </div>
         <div class="metric">
           <div class="k">Shared ownership rent (monthly)</div>
           <div class="v" id="rentMonthly">—</div>
         </div>
         <div class="metric">
-          <div class="k">Total monthly outpay (mortgage + rent)</div>
-          <div class="v" id="totalMonthly">—</div>
+          <div class="k">Total outpay (mortgage + rent)</div>
+          <div class="v" id="totalOutpay">—</div>
         </div>
         <div class="metric">
           <div class="k">Loan principal (owned share)</div>
@@ -244,6 +259,32 @@
           <div class="k">Deposit amount (owned share)</div>
           <div class="v" id="deposit">—</div>
         </div>
+      </div>
+
+      <div class="inline-help" style="margin-top:10px;">
+        <div class="text">
+          Amortization schedule shows interest after offset, principal repaid, remaining balance, and the effective principal used for interest.
+        </div>
+        <div class="cta"><a href="#" id="toggleSchedule">Show schedule ↓</a></div>
+      </div>
+      <div id="scheduleWrap" class="card" style="margin-top:10px; display:none;">
+        <div class="section-title">Amortization schedule (first 24 periods)</div>
+        <div style="overflow:auto;">
+          <table style="width:100%; border-collapse: collapse; font-size:12px;">
+            <thead>
+              <tr style="text-align:left; border-bottom:1px solid var(--line);">
+                <th style="padding:8px 6px;">Period</th>
+                <th style="padding:8px 6px;">Payment</th>
+                <th style="padding:8px 6px;">Interest (after offset)</th>
+                <th style="padding:8px 6px;">Principal repaid</th>
+                <th style="padding:8px 6px;">Remaining balance</th>
+                <th style="padding:8px 6px;">Effective principal</th>
+              </tr>
+            </thead>
+            <tbody id="scheduleBody"></tbody>
+          </table>
+        </div>
+        <div class="note" style="margin-top:10px;">Showing first 24 periods only. Offset balance assumed constant.</div>
       </div>
 
       <div class="note">
@@ -285,7 +326,9 @@
     </div>
   </div>
 
-<script>
+<script type="module">
+  import { buildSchedule, periodsPerYear } from "./src/mortgage.js";
+
   const el = (id) => document.getElementById(id);
   const fmtGBP = (x) => {
     if (!isFinite(x)) return "—";
@@ -294,12 +337,10 @@
 
   // --- No-cookie state in URL helpers ---
   function b64urlEncode(str) {
-    // base64url without padding
     return btoa(unescape(encodeURIComponent(str)))
       .replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
   }
   function b64urlDecode(str) {
-    // restore padding
     const padLen = (4 - (str.length % 4)) % 4;
     const padded = str.replace(/-/g, "+").replace(/_/g, "/") + "=".repeat(padLen);
     return decodeURIComponent(escape(atob(padded)));
@@ -311,7 +352,25 @@
   function setQueryParam(url, key, value) {
     const u = new URL(url, window.location.origin);
     u.searchParams.set(key, value);
-    return u.pathname + u.search; // relative
+    return u.pathname + u.search;
+  }
+
+  function validateNumber(name, value, {min=-Infinity, max=Infinity}={}) {
+    if (value === "" || value === null || value === undefined || Number.isNaN(value)) return `${name} is required.`;
+    if (value < min) return `${name} must be at least ${min}.`;
+    if (value > max) return `${name} must be at most ${max}.`;
+    return null;
+  }
+
+  function calcSharedRentMonthly(propertyPrice, ownershipPct, rentRatePct) {
+    const unownedValue = propertyPrice * (1 - (ownershipPct / 100));
+    const annualRent = unownedValue * (rentRatePct / 100);
+    return annualRent / 12;
+  }
+
+  function setSnapshotsToDash() {
+    ["p13_interest","p13_capital","p13_rent","p13_total","p25_interest","p25_capital","p25_rent","p25_total"]
+      .forEach(id => el(id).textContent = "—");
   }
 
   function getStateFromInputs() {
@@ -321,9 +380,11 @@
       rate: el("rate").value,
       years: el("years").value,
       type: el("type").value,
+      frequency: el("frequency").value,
+      offsetBalance: el("offsetBalance").value,
       shared: el("sharedToggle").checked ? 1 : 0,
       ownPct: el("ownPct").value,
-      rentRatePct: el("rentRatePct").value
+      rentRatePct: el("rentRatePct").value,
     };
   }
 
@@ -335,6 +396,8 @@
     if (state.rate != null) el("rate").value = state.rate;
     if (state.years != null) el("years").value = state.years;
     if (state.type != null) el("type").value = state.type;
+    if (state.frequency != null) el("frequency").value = state.frequency;
+    if (state.offsetBalance != null) el("offsetBalance").value = state.offsetBalance;
 
     const shared = state.shared === 1 || state.shared === "1" || state.shared === true || state.shared === "true";
     el("sharedToggle").checked = shared;
@@ -352,42 +415,20 @@
     el("explainerLinkBottom").setAttribute("href", href);
   }
 
-  // --- Calculator logic ---
-  function validateNumber(name, value, {min=-Infinity, max=Infinity}={}) {
-    if (value === "" || value === null || value === undefined || Number.isNaN(value)) return `${name} is required.`;
-    if (value < min) return `${name} must be at least ${min}.`;
-    if (value > max) return `${name} must be at most ${max}.`;
-    return null;
-  }
-
-  function repaymentMonthlyPayment(principal, monthlyRate, n) {
-    if (n <= 0) return NaN;
-    if (monthlyRate === 0) return principal / n;
-    const pow = Math.pow(1 + monthlyRate, n);
-    return principal * (monthlyRate * pow) / (pow - 1);
-  }
-
-  function repaymentSplitAtPayment(principal, monthlyRate, monthlyPayment, k) {
-    let balance = principal;
-    for (let m = 1; m <= k; m++) {
-      const interest = balance * monthlyRate;
-      const capital = Math.max(0, monthlyPayment - interest);
-      balance = Math.max(0, balance - capital);
-      if (m === k) return { interest, capital };
-      if (balance <= 0) return { interest: 0, capital: 0 };
-    }
-    return { interest: 0, capital: 0 };
-  }
-
-  function setSnapshotsToDash() {
-    ["p13_interest","p13_capital","p13_rent","p13_total","p25_interest","p25_capital","p25_rent","p25_total"]
-      .forEach(id => el(id).textContent = "—");
-  }
-
-  function calcSharedRentMonthly(propertyPrice, ownershipPct, rentRatePct) {
-    const unownedValue = propertyPrice * (1 - (ownershipPct / 100));
-    const annualRent = unownedValue * (rentRatePct / 100);
-    return annualRent / 12;
+  function renderSchedule(schedule) {
+    const tbody = el("scheduleBody");
+    const rows = schedule.slice(0, 24).map((r) => {
+      return `
+        <tr style="border-bottom:1px solid var(--line);">
+          <td style="padding:8px 6px;">${r.period}</td>
+          <td style="padding:8px 6px;">${fmtGBP(r.payment)}</td>
+          <td style="padding:8px 6px;">${fmtGBP(r.interest)}</td>
+          <td style="padding:8px 6px;">${fmtGBP(r.principalPaid)}</td>
+          <td style="padding:8px 6px;">${fmtGBP(r.balance)}</td>
+          <td style="padding:8px 6px;">${fmtGBP(r.effectivePrincipal)}</td>
+        </tr>`;
+    }).join("");
+    tbody.innerHTML = rows;
   }
 
   function calc() {
@@ -398,6 +439,8 @@
     const rate = Number(el("rate").value);
     const years = Number(el("years").value);
     const type = el("type").value;
+    const frequency = el("frequency").value;
+    const offsetBalance = Number(el("offsetBalance").value);
 
     const shared = el("sharedToggle").checked;
     const ownPct = shared ? Number(el("ownPct").value) : 100;
@@ -408,14 +451,16 @@
       validateNumber("Down payment (%)", downPct, {min:0, max:100}),
       validateNumber("Yearly mortgage rate (%)", rate, {min:0}),
       validateNumber("Mortgage term (years)", years, {min:1}),
+      validateNumber("Offset balance (£)", offsetBalance, {min:0}),
       shared ? validateNumber("Ownership (%)", ownPct, {min:1, max:100}) : null,
-      shared ? validateNumber("Unowned share rent rate (%)", rentRatePct, {min:0, max:100}) : null
+      shared ? validateNumber("Unowned share rent rate (%)", rentRatePct, {min:0, max:100}) : null,
     ].filter(Boolean);
 
     if (errs.length) {
       el("error").textContent = errs[0];
       setSnapshotsToDash();
       syncExplainerLinks();
+      el("scheduleBody").innerHTML = "";
       return;
     }
 
@@ -427,68 +472,61 @@
       el("error").textContent = "Deposit cannot exceed the owned value of the property.";
       setSnapshotsToDash();
       syncExplainerLinks();
-      return;
-    }
-
-    const n = Math.round(years * 12);
-    const i = (rate / 100) / 12;
-
-    if (n < 1) {
-      el("error").textContent = "Mortgage term must be at least 1 year.";
-      setSnapshotsToDash();
-      syncExplainerLinks();
+      el("scheduleBody").innerHTML = "";
       return;
     }
 
     const rentMonthly = shared ? calcSharedRentMonthly(price, ownPct, rentRatePct) : 0;
+    const ppy = periodsPerYear(frequency);
+    const rentPerPeriod = rentMonthly * 12 / ppy;
 
-    let mortgageMonthly = 0;
+    const { payment, schedule, nPeriods } = buildSchedule({
+      principal,
+      annualRatePct: rate,
+      years,
+      frequency,
+      type,
+      offsetBalance,
+    });
 
-    if (type === "interestOnly") {
-      mortgageMonthly = principal * i;
-      const p13 = { interest: mortgageMonthly, capital: 0 };
-      const p25 = { interest: mortgageMonthly, capital: 0 };
+    // Snapshots: show split at 13th and 25th repayment period (for the chosen frequency)
+    const p13 = schedule[12];
+    const p25 = schedule[24];
+
+    if (p13) {
       el("p13_interest").textContent = fmtGBP(p13.interest);
-      el("p13_capital").textContent  = fmtGBP(p13.capital);
-      el("p25_interest").textContent = fmtGBP(p25.interest);
-      el("p25_capital").textContent  = fmtGBP(p25.capital);
+      el("p13_capital").textContent  = fmtGBP(p13.principalPaid);
     } else {
-      mortgageMonthly = repaymentMonthlyPayment(principal, i, n);
-      if (n >= 13) {
-        const s13 = repaymentSplitAtPayment(principal, i, mortgageMonthly, 13);
-        el("p13_interest").textContent = fmtGBP(s13.interest);
-        el("p13_capital").textContent  = fmtGBP(s13.capital);
-      } else {
-        el("p13_interest").textContent = "—";
-        el("p13_capital").textContent  = "—";
-      }
-      if (n >= 25) {
-        const s25 = repaymentSplitAtPayment(principal, i, mortgageMonthly, 25);
-        el("p25_interest").textContent = fmtGBP(s25.interest);
-        el("p25_capital").textContent  = fmtGBP(s25.capital);
-      } else {
-        el("p25_interest").textContent = "—";
-        el("p25_capital").textContent  = "—";
-      }
+      el("p13_interest").textContent = "—";
+      el("p13_capital").textContent  = "—";
     }
 
-    const totalMonthly = mortgageMonthly + rentMonthly;
+    if (p25) {
+      el("p25_interest").textContent = fmtGBP(p25.interest);
+      el("p25_capital").textContent  = fmtGBP(p25.principalPaid);
+    } else {
+      el("p25_interest").textContent = "—";
+      el("p25_capital").textContent  = "—";
+    }
 
-    el("mortgageMonthly").textContent = fmtGBP(mortgageMonthly);
+    const totalOutpay = payment + rentPerPeriod;
+
+    el("mortgagePayment").textContent = fmtGBP(payment);
     el("rentMonthly").textContent = fmtGBP(rentMonthly);
-    el("totalMonthly").textContent = fmtGBP(totalMonthly);
+    el("totalOutpay").textContent = fmtGBP(totalOutpay);
     el("principal").textContent = fmtGBP(principal);
     el("deposit").textContent = fmtGBP(depositAmt);
 
-    el("p13_rent").textContent = fmtGBP(rentMonthly);
-    el("p13_total").textContent = fmtGBP(totalMonthly);
-    el("p25_rent").textContent = fmtGBP(rentMonthly);
-    el("p25_total").textContent = fmtGBP(totalMonthly);
+    el("p13_rent").textContent = fmtGBP(rentPerPeriod);
+    el("p13_total").textContent = fmtGBP(totalOutpay);
+    el("p25_rent").textContent = fmtGBP(rentPerPeriod);
+    el("p25_total").textContent = fmtGBP(totalOutpay);
 
     el("schemeNote").textContent = shared
-      ? `Scheme: Shared ownership (${ownPct}% owned). Total outpay = mortgage (owned share) + rent (unowned share at ${rentRatePct}%).`
-      : `Scheme: Private property (100% owned).`;
+      ? `Scheme: Shared ownership (${ownPct}% owned). Total outpay = mortgage (owned share) + rent (unowned share at ${rentRatePct}%). Offset balance reduces interest only.`
+      : `Scheme: Private property (100% owned). Offset balance reduces interest only.`;
 
+    renderSchedule(schedule);
     syncExplainerLinks();
   }
 
@@ -498,36 +536,38 @@
     el("rate").value = 4.5;
     el("years").value = 30;
     el("type").value = "repayment";
+    el("frequency").value = "monthly";
+    el("offsetBalance").value = 0;
+
     el("sharedToggle").checked = false;
     el("ownershipBlock").style.display = "none";
     el("ownPct").value = 50;
     el("rentRatePct").value = 2.7;
 
-    el("mortgageMonthly").textContent = "—";
+    el("mortgagePayment").textContent = "—";
     el("rentMonthly").textContent = "—";
-    el("totalMonthly").textContent = "—";
+    el("totalOutpay").textContent = "—";
     el("principal").textContent = "—";
     el("deposit").textContent = "—";
+    el("scheduleBody").innerHTML = "";
     el("schemeNote").textContent = "";
     el("error").textContent = "";
     setSnapshotsToDash();
     syncExplainerLinks();
 
-    // Clear URL state if present
     const u = new URL(window.location.href);
     u.searchParams.delete("state");
     window.history.replaceState({}, "", u.pathname + u.search);
   }
 
   function attachLiveSync() {
-    const ids = ["price","downPct","rate","years","type","sharedToggle","ownPct","rentRatePct"];
+    const ids = ["price","downPct","rate","years","type","frequency","offsetBalance","sharedToggle","ownPct","rentRatePct"];
     ids.forEach((id) => {
       const node = el(id);
       const evt = (node.tagName === "SELECT" || node.type === "checkbox") ? "change" : "input";
       node.addEventListener(evt, () => {
         if (id === "sharedToggle") {
           el("ownershipBlock").style.display = node.checked ? "block" : "none";
-          // keep explainer links consistent when toggling shared ownership
           syncExplainerLinks();
         }
         calc();
@@ -535,8 +575,16 @@
     });
   }
 
-  el("calcBtn").addEventListener("click", calc);
-  el("resetBtn").addEventListener("click", reset);
+  el("calcBtn").addEventListener("click", (e) => { e.preventDefault(); calc(); });
+  el("resetBtn").addEventListener("click", (e) => { e.preventDefault(); reset(); });
+
+  el("toggleSchedule").addEventListener("click", (e) => {
+    e.preventDefault();
+    const wrap = el("scheduleWrap");
+    const open = wrap.style.display !== "none";
+    wrap.style.display = open ? "none" : "block";
+    el("toggleSchedule").textContent = open ? "Show schedule ↓" : "Hide schedule ↑";
+  });
 
   // Restore state from URL (if returning from explainer)
   (function initFromUrlState() {
@@ -545,13 +593,10 @@
     try {
       const obj = JSON.parse(b64urlDecode(s));
       applyStateToInputs(obj);
-      // remove state from URL after applying (keeps URL clean)
       const u = new URL(window.location.href);
       u.searchParams.delete("state");
       window.history.replaceState({}, "", u.pathname + u.search);
-    } catch (e) {
-      // ignore bad state
-    }
+    } catch (e) {}
   })();
 
   attachLiveSync();
