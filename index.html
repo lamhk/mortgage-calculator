@@ -244,6 +244,14 @@
           <div class="v" id="mortgagePayment">—</div>
         </div>
         <div class="metric">
+          <div class="k">Interest this period (after offset)</div>
+          <div class="v" id="interestThisPeriod">—</div>
+        </div>
+        <div class="metric">
+          <div class="k">Estimated payoff time (based on offset)</div>
+          <div class="v" id="payoffTime">—</div>
+        </div>
+        <div class="metric">
           <div class="k">Shared ownership rent (monthly)</div>
           <div class="v" id="rentMonthly">—</div>
         </div>
@@ -512,6 +520,13 @@
     const totalOutpay = payment + rentPerPeriod;
 
     el("mortgagePayment").textContent = fmtGBP(payment);
+
+    // Helpful indicators to show the offset effect (payment may stay the same, but interest drops and payoff can be faster)
+    el("interestThisPeriod").textContent = fmtGBP(schedule[0]?.interest ?? 0);
+    const payoffPeriods = schedule.length;
+    const payoffYears = payoffPeriods / ppy;
+    el("payoffTime").textContent = payoffPeriods ? `${payoffPeriods} periods (~${payoffYears.toFixed(1)}y)` : "—";
+
     el("rentMonthly").textContent = fmtGBP(rentMonthly);
     el("totalOutpay").textContent = fmtGBP(totalOutpay);
     el("principal").textContent = fmtGBP(principal);
@@ -545,6 +560,8 @@
     el("rentRatePct").value = 2.7;
 
     el("mortgagePayment").textContent = "—";
+    el("interestThisPeriod").textContent = "—";
+    el("payoffTime").textContent = "—";
     el("rentMonthly").textContent = "—";
     el("totalOutpay").textContent = "—";
     el("principal").textContent = "—";
