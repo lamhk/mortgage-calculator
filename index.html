@@ -105,6 +105,17 @@
     }
     .inline-help .text { color: var(--muted); font-size: 12px; line-height: 1.4; }
     .inline-help .cta { font-size: 12px; font-weight: 650; white-space: nowrap; }
+
+    .callout {
+      background: rgba(34,197,94,.12);
+      border: 1px solid rgba(34,197,94,.45);
+      border-radius: 12px;
+      padding: 10px 12px;
+      margin-top: 10px;
+    }
+    .callout-title { font-weight: 750; font-size: 13px; margin: 0 0 6px; }
+    .callout-body { color: var(--muted); font-size: 12px; line-height: 1.45; margin: 0; }
+    .callout a { color: var(--text); text-decoration: underline; }
   </style>
 </head>
 <body>
@@ -185,6 +196,27 @@
         <div class="field">
           <label for="offsetBalance">Offset balance (£)</label>
           <input id="offsetBalance" type="number" min="0" step="100" value="0">
+        </div>
+      </div>
+
+      <div class="callout" role="note" aria-label="Offset mortgage explainer">
+        <div class="callout-title">What is an offset mortgage?</div>
+        <p class="callout-body">
+          Money in an offset account reduces the balance you pay interest on (it usually <strong>does not</strong> reduce your loan balance).
+          Your repayment can look the same, but interest drops and you may finish sooner.
+          <a href="#" id="toggleOffsetExplainer">Show explanation ↓</a>
+        </p>
+      </div>
+
+      <div id="offsetExplainer" class="card" style="display:none;">
+        <div class="section-title">Offset mortgage: how this calculator treats it</div>
+        <div class="note" style="margin-top:0;">
+          <ul style="margin: 8px 0 0 18px;">
+            <li><strong>Effective principal</strong> = max(0, remaining balance − offset balance)</li>
+            <li><strong>Interest each period</strong> is calculated on the effective principal</li>
+            <li>Your <strong>payment amount</strong> stays the same for a standard repayment mortgage — the offset mainly changes the <strong>interest/principal split</strong></li>
+            <li>This calculator assumes the <strong>offset balance is constant</strong> (no deposits/withdrawals over time)</li>
+          </ul>
         </div>
       </div>
 
@@ -601,6 +633,17 @@
     const open = wrap.style.display !== "none";
     wrap.style.display = open ? "none" : "block";
     el("toggleSchedule").textContent = open ? "Show schedule ↓" : "Hide schedule ↑";
+  });
+
+  el("toggleOffsetExplainer").addEventListener("click", (e) => {
+    e.preventDefault();
+    const box = el("offsetExplainer");
+    const open = box.style.display !== "none";
+    box.style.display = open ? "none" : "block";
+    el("toggleOffsetExplainer").textContent = open ? "Show explanation ↓" : "Hide explanation ↑";
+    if (!open) {
+      box.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
   });
 
   // Restore state from URL (if returning from explainer)
