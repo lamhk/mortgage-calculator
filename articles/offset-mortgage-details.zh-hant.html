@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Offset 按揭（英國）：計算方法、好處與注意事項</title>
+  <meta name="description" content="解釋英國 Offset 按揭：effective principal 如何計算、主要好處與常見風險。並介紹兩種做法：供款不變而縮短年期 vs 年期不變而降低供款。" />
+  <link rel="canonical" href="https://mortgage-cal.uk/articles/offset-mortgage-details.zh-hant.html" />
+  <link rel="alternate" hreflang="en-GB" href="https://mortgage-cal.uk/articles/offset-mortgage-details.html" />
+  <link rel="alternate" hreflang="zh-Hant" href="https://mortgage-cal.uk/articles/offset-mortgage-details.zh-hant.html" />
+  <link rel="alternate" hreflang="x-default" href="https://mortgage-cal.uk/articles/offset-mortgage-details.html" />
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Offset 按揭（英國）：計算方法、好處與注意事項","datePublished":"2026-02-11","inLanguage":"zh-Hant","mainEntityOfPage":"https://mortgage-cal.uk/articles/offset-mortgage-details.zh-hant.html"}</script>
+  <style>
+    :root { --bg:#0b1220; --card:#111a2e; --text:#e7ecff; --muted:#a7b0d6; --line:#243155; --link:#b8c2ff; --inputBorder:#355a9a; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans TC", sans-serif; line-height: 1.85; margin: 24px; background: var(--bg); color: var(--text); max-width: 920px; }
+    a { color: var(--link); }
+    h1 { font-size: 1.7rem; margin: 0 0 10px; }
+    h2 { font-size: 1.2rem; margin-top: 26px; }
+    h3 { font-size: 1.05rem; margin-top: 18px; }
+    .meta { color: var(--muted); font-size: 0.95rem; margin: 0 0 14px; }
+    .note { background: #0e1730; border: 1px solid var(--line); padding: 10px 12px; border-radius: 10px; margin: 12px 0; color: var(--muted); }
+    .cta { background: #0b2447; border: 1px solid var(--inputBorder); padding: 12px 14px; border-radius: 10px; margin-top: 14px; }
+    code { background: rgba(255,255,255,.06); padding: 2px 6px; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <p><a href="../articles.html">&larr; 返回文章目錄</a> · <a href="../index.html">計算機</a></p>
+
+  <div class="lang" aria-label="Language selector" style="margin: 6px 0 18px;">
+    <span style="display:inline-flex;gap:8px;align-items:center;border:1px solid var(--line);border-radius:999px;padding:6px 10px;background:var(--card);">
+      <span style="color:var(--muted);">語言：</span>
+      <a href="./offset-mortgage-details.html" style="font-weight:700;text-decoration:none;">English</a>
+      <span style="color:#9ca3af;">|</span>
+      <a href="./offset-mortgage-details.zh-hant.html" style="font-weight:700;color:var(--text);text-decoration:none;">繁體中文</a>
+    </span>
+  </div>
+
+  <h1>Offset 按揭（英國）：計算方法、好處與注意事項</h1>
+  <p class="meta">發佈日期：<time datetime="2026-02-11">2026 年 2 月 11 日</time></p>
+
+  <p>
+    <strong>Offset 按揭</strong>一般會連結一個<strong>offset 儲蓄/活期帳戶</strong>。
+    帳戶內的資金通常不會像一般儲蓄那樣計利息，而是用來<strong>減少你需要支付按揭利息的計息本金</strong>。
+  </p>
+
+  <h2>本網站計算機目前的 offset 做法（供款不變，可能提早供完）</h2>
+  <p>
+    我們的計算機把 offset 餘額視為每期降低「用來計息」的本金。
+    核心概念是 <strong>effective principal（有效計息本金）</strong>：
+  </p>
+
+  <div class="note">
+    <strong>有效計息本金</strong> = <code>max(0, 剩餘貸款 − offset 餘額)</code>
+    <br>
+    <strong>每期利息</strong> = <code>有效計息本金 × 每期利率</code>
+  </div>
+
+  <p>
+    以一般 repayment mortgage（本息供款）來說，<strong>每期供款金額通常不會因 offset 而自動改變</strong>。
+    offset 令利息下降後，同一筆供款就有更多比例用來還本金，因此你可能會<strong>提早供完</strong>。
+  </p>
+
+  <h3>你會在哪些地方看到差異？</h3>
+  <ul>
+    <li><strong>Interest this period（after offset）</strong>：輸入 offset 後，這個數值應該會下降。</li>
+    <li><strong>Estimated payoff time</strong>：供款不變時，年期可能縮短。</li>
+    <li>Amortization schedule 會顯示每期的有效計息本金、利息與還本金的拆分。</li>
+  </ul>
+
+  <div class="note">
+    假設：目前計算機假設你的 <strong>offset 餘額是固定不變</strong>（沒有存入/提取的變化）。
+  </div>
+
+  <h2>另一種常見做法：年期不變，供款降低</h2>
+  <p>
+    有些人希望保持原本的年期（例如 25 年）不變，並把 offset 的好處用來降低每月供款。
+    概念上：
+  </p>
+  <ul>
+    <li>利息同樣以<strong>有效計息本金</strong>去計。</li>
+    <li>但不是「供款固定」，而是<strong>重新計算供款金額</strong>，令貸款仍然在原定年期內供完。</li>
+  </ul>
+
+  <p>簡單總結，你可以在兩種思路之間選擇：</p>
+  <ul>
+    <li><strong>供款不變 → 可能提早供完</strong>（本網站目前採用）</li>
+    <li><strong>年期不變 → 供款降低</strong>（另一種常見方法）</li>
+  </ul>
+
+  <h2>好處（offset 的吸引力）</h2>
+  <ul>
+    <li><strong>利息支出下降</strong>（因為計息基礎變小）。</li>
+    <li><strong>彈性</strong>：保留現金流動性，同時降低利息（視乎不同銀行的 offset 帳戶規則）。</li>
+    <li><strong>可能更快供完</strong>（如果你保持供款不變）。</li>
+  </ul>
+
+  <h2>注意事項（常見風險與坑）</h2>
+  <ul>
+    <li><strong>利率/費用取捨</strong>：offset 產品未必永遠比非 offset 便宜，可能利率或費用較高，應比較總成本。</li>
+    <li><strong>現金紀律</strong>：錢放在 offset 帳戶很容易花掉；一旦 offset 餘額下降，你的利息就會回升。</li>
+    <li><strong>回報比較</strong>：offset 的「等效回報」大概等於你的按揭利率，但你可能放棄了其他投資回報（視乎風險與稅務）。</li>
+    <li><strong>仍需符合批核</strong>：LTV、入息、支出與信貸紀錄仍然是關鍵。</li>
+    <li><strong>邊界情況</strong>：如果 offset 餘額大於剩餘貸款，有效計息本金可能接近 0，利息幾乎為零，但供款安排與產品條款仍需按銀行規則處理。</li>
+  </ul>
+
+  <div class="cta">
+    <strong>行動建議：</strong>
+    你可以用計算機把 offset 設為 £0 與 £50,000 作比較，觀察「每期利息」及「預計供完時間」的變化。
+  </div>
+
+  <div class="note" style="margin-top:18px;">
+    <strong>相關文章：</strong>
+    <ul style="margin:8px 0 0 18px;">
+      <li><a href="./ltv-vs-rates.zh-hant.html">LTV 與利率</a></li>
+      <li><a href="./fixed-vs-tracker.zh-hant.html">固定 vs 追蹤利率</a></li>
+      <li><a href="./first-time-buyer-guide.zh-hant.html">首置按揭流程</a></li>
+    </ul>
+  </div>
+</body>
+</html>
