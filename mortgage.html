@@ -46,6 +46,10 @@
   </nav>
 
   <main class="wrap wizard">
+    <div id="jsWarning" class="card" style="grid-column:1/-1; border-color: rgba(255,176,32,.5); background: rgba(255,176,32,.08);">
+      <div class="title">Interactive calculator not running</div>
+      <p class="note">If results are not updating when you change inputs, you’re probably viewing this page in a preview that blocks JavaScript modules (for example the GitHub repo file viewer). Open the live site URL (e.g. <a href="https://mortgage-cal.uk/mortgage.html">mortgage-cal.uk/mortgage.html</a>) instead.</p>
+    </div>
     <section class="card panel">
       <div class="title">Inputs (wizard style)</div>
 
@@ -225,6 +229,10 @@
   </main>
 
 <script type="module">
+  // If this module runs, hide the warning banner.
+  const warn = document.getElementById('jsWarning');
+  if (warn) warn.style.display = 'none';
+
   import { buildSchedule, periodsPerYear } from "./src/mortgage.js";
 
   const el = (id) => document.getElementById(id);
