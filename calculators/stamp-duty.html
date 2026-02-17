@@ -3,15 +3,20 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>UK Stamp Duty (SDLT) Calculator 2026 | mortgage-cal.uk</title>
+  <title>UK Stamp Duty (SDLT) Calculator (England/NI) 2025/26 | mortgage-cal.uk</title>
   <link rel="canonical" href="https://mortgage-cal.uk/calculators/stamp-duty.html" />
-  <meta name="description" content="UK Stamp Duty (SDLT) calculator with explanations and examples. No cookies." />
+  <meta name="description" content="UK Stamp Duty (SDLT) calculator (England/N. Ireland residential) with breakdown, first-time buyer relief, additional property surcharge and non-UK resident surcharge. No cookies." />
   <link rel="stylesheet" href="../src/site.css" />
+  <style>
+    .pill{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:6px 10px;background:#0e1730;color:var(--muted);font-size:12px}
+    .warn{color:#ffd7a3}
+  </style>
 </head>
 <body>
   <header class="header">
+    <div class="pill">England / N. Ireland · Residential · No cookies</div>
     <h1 class="h1">UK Stamp Duty (SDLT) calculator</h1>
-    <p class="sub">Estimate SDLT from the purchase price. Mobile-first, no cookies.</p>
+    <p class="sub">Banded SDLT estimate with transparent breakdown. Inputs stored in the URL (shareable) — no cookies.</p>
   </header>
 
   <nav class="nav" aria-label="Site sections">
@@ -26,129 +31,127 @@
   <main class="wrap grid">
     <section class="card">
       <div class="title">Inputs</div>
+
       <div class="row">
         <div class="field">
           <label for="price">Purchase price (£)</label>
-          <input id="price" type="number" min="0" step="1000" value="400000" />
+          <input id="price" type="number" min="0" step="1000" value="400000" inputmode="decimal" />
         </div>
         <div class="field">
-          <label for="buyer">Buyer type</label>
-          <select id="buyer">
-            <option value="main" selected>Main residence</option>
-            <option value="additional">Additional property (second home / buy-to-let) (simple +3% surcharge)</option>
+          <label for="buyerType">Buyer type</label>
+          <select id="buyerType">
+            <option value="main" selected>Main residence / only property</option>
+            <option value="ftb">First‑time buyer (if eligible)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="additional">Additional property surcharge?</label>
+          <select id="additional">
+            <option value="no" selected>No</option>
+            <option value="yes">Yes (usually +5% on top of bands)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="nonResident">Non‑UK resident surcharge?</label>
+          <select id="nonResident">
+            <option value="no" selected>No</option>
+            <option value="yes">Yes (+2% on top of bands)</option>
           </select>
         </div>
       </div>
 
       <div class="btns">
-        <button id="calcBtn">Calculate</button>
-        <button id="resetBtn" class="secondary">Reset</button>
+        <button id="calcBtn" type="button">Calculate</button>
+        <button id="resetBtn" class="secondary" type="button">Reset</button>
       </div>
 
       <div id="error" class="err" role="alert" aria-live="polite"></div>
 
       <p class="note">
-        Note: SDLT rules can change. This is a simplified calculator (England & Northern Ireland style bands).
-        If you need Scotland (LBTT) or Wales (LTT), we can add dedicated versions.
+        This implements the GOV.UK residential SDLT bands for England/N. Ireland, plus simplified surcharges.
+        Eligibility rules (e.g. replacing main residence, first‑time buyer criteria, corporate rules, 6+ properties, shared ownership choices) are more detailed than this page.
       </p>
     </section>
 
     <section class="card sticky">
       <div class="title">Result</div>
       <div class="kpis">
-        <div class="metric"><div class="k">Estimated stamp duty</div><div class="v" id="sdlt">—</div></div>
+        <div class="metric"><div class="k">Estimated SDLT</div><div class="v" id="sdlt">—</div></div>
         <div class="metric"><div class="k">Effective rate</div><div class="v" id="eff">—</div></div>
       </div>
+
       <div class="hr"></div>
       <div class="title">Breakdown</div>
       <div id="breakdown" class="note">—</div>
+
+      <div class="hr"></div>
+      <div class="note" id="meta"></div>
+      <p class="note warn" style="margin-top:8px;">
+        Disclaimer: general information only; not tax advice.
+      </p>
     </section>
 
     <section class="card" style="grid-column:1/-1;">
-      <div class="title">What is Stamp Duty (SDLT)?</div>
-      <p class="note">Stamp Duty Land Tax (SDLT) is a tax paid when buying property/land in England and Northern Ireland. It’s charged in bands — you only pay a higher rate on the slice of the price that falls in that band.</p>
-
-      <div class="hr"></div>
-      <div class="title">Worked example</div>
-      <p class="note">If a home costs £400,000, the first slice may be taxed at 0%, then the next slice at 2%, then the next at 5% (depending on current thresholds). This page shows the band-by-band breakdown.</p>
+      <div class="title">Explainer (for SEO + humans)</div>
+      <p class="note" style="font-size:14px;">
+        SDLT is charged in <strong>bands</strong>: you pay 0% on the first slice, then higher rates on the next slices.
+        This calculator shows the band‑by‑band breakdown so you can sanity‑check the result.
+      </p>
 
       <div class="hr"></div>
       <div class="title">FAQs</div>
-      <p class="note"><strong>Does owning another property matter?</strong> Often yes — additional properties can face a surcharge. This tool includes a simple “+3% surcharge” option as an approximation.</p>
-      <p class="note"><strong>Is this advice?</strong> No. It’s an estimate for general information only.</p>
+      <ul class="note" style="margin:8px 0 0 18px;">
+        <li><strong>Additional property surcharge:</strong> often applies if you’ll own more than one residential property after purchase. Replacing your main residence can change this.</li>
+        <li><strong>First‑time buyer relief:</strong> only applies if you (and anyone you’re buying with) are first‑time buyers, and the price is within the cap.</li>
+        <li><strong>Non‑UK resident surcharge:</strong> may apply depending on presence in the UK (rules are detailed).</li>
+      </ul>
     </section>
   </main>
 
 <script type="module">
+  import { calcSdlt, SDLT_META } from "../src/sdlt.js";
+
   const el = (id) => document.getElementById(id);
-  const fmtGBP = (x) => new Intl.NumberFormat('en-GB', {style:'currency', currency:'GBP', maximumFractionDigits: 0}).format(x);
-
-  // Simplified England/NI bands (placeholder). Update when rules change.
-  // Each band: [upTo, rate]
-  const BANDS_MAIN = [
-    [250000, 0.00],
-    [925000, 0.05],
-    [1500000, 0.10],
-    [Infinity, 0.12],
-  ];
-  // The band 250k->925k is actually 5% only above 250k, but we're missing the 2% 125k-250k band if thresholds differ.
-  // To keep this tool honest, we'll include a more typical modern structure:
-  const BANDS_MAIN_TYPICAL = [
-    [250000, 0.00],
-    [925000, 0.05],
-    [1500000, 0.10],
-    [Infinity, 0.12],
-  ];
-
-  // For a safer baseline, use the 0/2/5/10/12 structure with 125k threshold.
-  const BANDS_MAIN_CLASSIC = [
-    [125000, 0.00],
-    [250000, 0.02],
-    [925000, 0.05],
-    [1500000, 0.10],
-    [Infinity, 0.12],
-  ];
-
-  // Use classic structure until you confirm current thresholds for 2026.
-  const bands = BANDS_MAIN_CLASSIC;
-
-  function calcBandTax(price, bands, surchargeRate=0) {
-    let remaining = price;
-    let lastCap = 0;
-    const lines = [];
-    let tax = 0;
-
-    for (const [cap, rate] of bands) {
-      const slice = Math.max(0, Math.min(remaining, cap - lastCap));
-      if (slice <= 0) { lastCap = cap; continue; }
-      const effRate = rate + surchargeRate;
-      const sliceTax = slice * effRate;
-      tax += sliceTax;
-      lines.push({ from:lastCap, to: cap === Infinity ? null : cap, slice, rate: effRate, sliceTax });
-      remaining -= slice;
-      lastCap = cap;
-      if (remaining <= 0) break;
-    }
-    return { tax, lines };
-  }
-
-  function renderBreakdown(lines) {
-    if (!lines.length) return '—';
-    return '<ul style="margin:8px 0 0 18px;">' + lines.map(l => {
-      const band = l.to == null ? `£${fmtGBP(l.from).replace('£','')}+` : `£${fmtGBP(l.from).replace('£','')}–£${fmtGBP(l.to).replace('£','')}`;
-      return `<li>${band}: ${fmtGBP(l.slice)} × ${(l.rate*100).toFixed(1)}% = <strong>${fmtGBP(l.sliceTax)}</strong></li>`;
-    }).join('') + '</ul>';
-  }
+  const fmtGBP0 = (x) => new Intl.NumberFormat('en-GB', {style:'currency', currency:'GBP', maximumFractionDigits: 0}).format(x);
 
   function validate(price){
     if (!isFinite(price) || price < 0) return 'Enter a valid purchase price.';
     return null;
   }
 
+  function renderBreakdown(lines){
+    if (!lines?.length) return '—';
+    const li = lines.map(l => {
+      const band = l.to == null ? `£${fmtGBP0(l.from).replace('£','')}+` : `£${fmtGBP0(l.from).replace('£','')}–£${fmtGBP0(l.to).replace('£','')}`;
+      return `<li>${band}: ${fmtGBP0(l.slice)} × ${(l.rate*100).toFixed(1)}% = <strong>${fmtGBP0(l.tax)}</strong></li>`;
+    }).join('');
+    return `<ul style="margin:8px 0 0 18px;">${li}</ul>`;
+  }
+
+  function syncUrl(){
+    const u = new URL(window.location.href);
+    ['price','buyerType','additional','nonResident'].forEach((k)=>u.searchParams.set(k, el(k).value));
+    window.history.replaceState({}, '', u.pathname + u.search);
+  }
+
+  function enforceUiRules(){
+    // If first-time buyer selected, additional property surcharge doesn't make sense in most cases.
+    if (el('buyerType').value === 'ftb') {
+      el('additional').value = 'no';
+      el('additional').disabled = true;
+    } else {
+      el('additional').disabled = false;
+    }
+  }
+
   function calc(){
+    enforceUiRules();
     el('error').textContent = '';
+
     const price = Number(el('price').value);
-    const buyer = el('buyer').value;
     const err = validate(price);
     if (err){
       el('error').textContent = err;
@@ -158,42 +161,63 @@
       return;
     }
 
-    const surcharge = buyer === 'additional' ? 0.03 : 0;
-    const { tax, lines } = calcBandTax(price, bands, surcharge);
+    const opts = {
+      buyerType: el('buyerType').value,
+      additionalProperty: el('additional').value === 'yes',
+      nonUkResident: el('nonResident').value === 'yes',
+    };
 
-    el('sdlt').textContent = fmtGBP(Math.round(tax));
-    el('eff').textContent = price > 0 ? `${(tax/price*100).toFixed(2)}%` : '—';
-    el('breakdown').innerHTML = renderBreakdown(lines);
+    const res = calcSdlt(price, opts);
+    if (!res.ok){
+      el('sdlt').textContent = '—';
+      el('eff').textContent = '—';
+      el('breakdown').innerHTML = `<span class="warn">${res.reason}</span>`;
+      el('meta').textContent = `Bands source: GOV.UK. Captured on ${SDLT_META.capturedOn}.`;
+      syncUrl();
+      return;
+    }
 
-    // no-cookie, shareable state
-    const u = new URL(window.location.href);
-    u.searchParams.set('price', String(price));
-    u.searchParams.set('buyer', buyer);
-    window.history.replaceState({}, '', u.pathname + u.search);
+    el('sdlt').textContent = fmtGBP0(Math.round(res.total));
+    el('eff').textContent = price > 0 ? `${(res.total/price*100).toFixed(2)}%` : '—';
+    el('breakdown').innerHTML = renderBreakdown(res.lines);
+
+    const extras = [];
+    if (opts.additionalProperty) extras.push('+5% additional property');
+    if (opts.nonUkResident) extras.push('+2% non‑UK resident');
+
+    el('meta').textContent = `Bands source: GOV.UK (${SDLT_META.sourceUrl}). Captured on ${SDLT_META.capturedOn}.` + (extras.length ? ` Surcharges: ${extras.join(' + ')}.` : '');
+
+    syncUrl();
   }
 
   function reset(){
     el('price').value = 400000;
-    el('buyer').value = 'main';
+    el('buyerType').value = 'main';
+    el('additional').value = 'no';
+    el('nonResident').value = 'no';
+
     const u = new URL(window.location.href);
-    u.searchParams.delete('price');
-    u.searchParams.delete('buyer');
+    ['price','buyerType','additional','nonResident'].forEach((k)=>u.searchParams.delete(k));
     window.history.replaceState({}, '', u.pathname + u.search);
+
     calc();
   }
 
   (function initFromUrl(){
     const u = new URL(window.location.href);
-    const price = u.searchParams.get('price');
-    const buyer = u.searchParams.get('buyer');
-    if (price != null) el('price').value = price;
-    if (buyer != null) el('buyer').value = buyer;
+    ['price','buyerType','additional','nonResident'].forEach((k)=>{
+      const v = u.searchParams.get(k);
+      if (v != null) el(k).value = v;
+    });
   })();
 
-  el('calcBtn').addEventListener('click', (e)=>{e.preventDefault();calc();});
-  el('resetBtn').addEventListener('click', (e)=>{e.preventDefault();reset();});
-  el('price').addEventListener('input', calc);
-  el('buyer').addEventListener('change', calc);
+  ['price','buyerType','additional','nonResident'].forEach((id)=>{
+    const node = el(id);
+    const evt = (node.tagName === 'SELECT') ? 'change' : 'input';
+    node.addEventListener(evt, calc);
+  });
+  el('calcBtn').addEventListener('click', calc);
+  el('resetBtn').addEventListener('click', reset);
 
   calc();
 </script>

@@ -3,20 +3,22 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Rent vs Buy (London) Comparison 2026 | mortgage-cal.uk</title>
+  <title>Rent vs Buy (London) Comparison | mortgage-cal.uk</title>
   <link rel="canonical" href="https://mortgage-cal.uk/calculators/rent-vs-buy-london.html" />
-  <meta name="description" content="Compare renting vs buying in London: monthly cashflow and a simple break-even intuition. Mobile-first with sticky results. No cookies." />
+  <meta name="description" content="Compare renting vs buying in London: monthly cashflow, horizon totals, and an advanced view including SDLT and selling costs. Mobile-first with sticky results. No cookies." />
   <link rel="stylesheet" href="../src/site.css" />
   <style>
     .step{border:1px solid var(--line);border-radius:14px;padding:12px;background:#0e1730;margin-bottom:10px}
     .step h2{margin:0 0 6px;font-size:14px}
     .step p{margin:0;color:var(--muted);font-size:12px;line-height:1.45}
+    .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    @media(max-width:900px){.two{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
   <header class="header">
-    <h1 class="h1">Rent vs Buy (London) — comparison</h1>
-    <p class="sub">A simple side-by-side view of monthly cashflow. Not investment advice. No cookies.</p>
+    <h1 class="h1">Rent vs buy (London) — comparison</h1>
+    <p class="sub">Cashflow-first comparison, with an optional advanced view that includes SDLT and selling costs. No cookies.</p>
   </header>
 
   <nav class="nav" aria-label="Site sections">
@@ -33,65 +35,107 @@
       <div class="title">Step-by-step inputs (mobile friendly)</div>
 
       <div class="step">
-        <h2>Step 1 — Renting today</h2>
+        <h2>Step 1 — Renting</h2>
         <div class="row">
           <div class="field">
-            <label for="rent">Monthly rent (£)</label>
-            <input id="rent" type="number" min="0" step="25" value="2200" />
+            <label for="rentMonthly">Monthly rent (£)</label>
+            <input id="rentMonthly" type="number" min="0" step="25" value="2200" inputmode="decimal" />
           </div>
           <div class="field">
-            <label for="rentBills">Extra monthly costs (£) (optional)</label>
-            <input id="rentBills" type="number" min="0" step="10" value="0" />
+            <label for="rentExtraMonthly">Extra monthly costs (£) (optional)</label>
+            <input id="rentExtraMonthly" type="number" min="0" step="10" value="0" inputmode="decimal" />
           </div>
         </div>
-        <p>Examples: storage, commute difference, renter’s insurance. (Council tax/utilities vary, so keep this optional.)</p>
+        <p>Examples: storage, commute difference, renter’s insurance.</p>
       </div>
 
       <div class="step">
-        <h2>Step 2 — Buying scenario</h2>
+        <h2>Step 2 — Buying</h2>
         <div class="row">
           <div class="field">
             <label for="price">Property price (£)</label>
-            <input id="price" type="number" min="0" step="1000" value="550000" />
+            <input id="price" type="number" min="0" step="1000" value="550000" inputmode="decimal" />
           </div>
           <div class="field">
             <label for="depositPct">Deposit (%)</label>
-            <input id="depositPct" type="number" min="0" max="100" step="0.1" value="15" />
+            <input id="depositPct" type="number" min="0" max="100" step="0.1" value="15" inputmode="decimal" />
           </div>
         </div>
         <div class="row">
           <div class="field">
-            <label for="rate">Mortgage rate (%)</label>
-            <input id="rate" type="number" min="0" step="0.01" value="4.5" />
+            <label for="mortgageRatePct">Mortgage rate (%)</label>
+            <input id="mortgageRatePct" type="number" min="0" step="0.01" value="4.5" inputmode="decimal" />
           </div>
           <div class="field">
-            <label for="years">Term (years)</label>
-            <input id="years" type="number" min="1" step="1" value="30" />
+            <label for="termYears">Term (years)</label>
+            <input id="termYears" type="number" min="1" step="1" value="30" inputmode="numeric" />
           </div>
         </div>
         <div class="row">
           <div class="field">
-            <label for="fees">Estimated buyer monthly costs (£)</label>
-            <input id="fees" type="number" min="0" step="10" value="250" />
+            <label for="ownerMonthlyCosts">Owner monthly costs (£)</label>
+            <input id="ownerMonthlyCosts" type="number" min="0" step="10" value="250" inputmode="decimal" />
           </div>
         </div>
         <p>Examples: service charge, ground rent, buildings insurance, maintenance buffer.</p>
       </div>
 
       <div class="step">
-        <h2>Step 3 — What you want to compare</h2>
+        <h2>Step 3 — Horizon</h2>
         <div class="row">
           <div class="field">
-            <label for="horizon">Comparison horizon (years)</label>
-            <input id="horizon" type="number" min="1" step="1" value="5" />
+            <label for="horizonYears">Comparison horizon (years)</label>
+            <input id="horizonYears" type="number" min="1" step="1" value="5" inputmode="numeric" />
           </div>
         </div>
-        <p>We show total cash paid over this horizon (rent vs mortgage+fees). This ignores property price growth and investment returns — it’s cashflow-first.</p>
+        <p>We show monthly cashflow, totals over the horizon, and an optional “net cost after sale” estimate.</p>
+      </div>
+
+      <div class="step">
+        <h2>Advanced assumptions (optional)</h2>
+        <div class="two">
+          <div class="field">
+            <label for="includeSdlt">Include SDLT estimate?</label>
+            <select id="includeSdlt">
+              <option value="yes" selected>Yes (main residence bands)</option>
+              <option value="no">No</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="sellingCostPct">Selling cost (% of sale price)</label>
+            <input id="sellingCostPct" type="number" min="0" step="0.1" value="1.5" inputmode="decimal" />
+          </div>
+          <div class="field">
+            <label for="legalFees">Buying legal fees (£)</label>
+            <input id="legalFees" type="number" min="0" step="50" value="1800" inputmode="decimal" />
+          </div>
+          <div class="field">
+            <label for="saleLegalFees">Selling legal fees (£)</label>
+            <input id="saleLegalFees" type="number" min="0" step="50" value="1200" inputmode="decimal" />
+          </div>
+          <div class="field">
+            <label for="surveyFees">Survey/valuation (£)</label>
+            <input id="surveyFees" type="number" min="0" step="50" value="600" inputmode="decimal" />
+          </div>
+          <div class="field">
+            <label for="priceGrowthPct">House price growth (%/yr)</label>
+            <input id="priceGrowthPct" type="number" step="0.1" value="2.0" inputmode="decimal" />
+          </div>
+          <div class="field">
+            <label for="rentInflationPct">Rent inflation (%/yr)</label>
+            <input id="rentInflationPct" type="number" step="0.1" value="3.0" inputmode="decimal" />
+          </div>
+          <div class="field">
+            <label for="ownerCostInflationPct">Owner cost inflation (%/yr)</label>
+            <input id="ownerCostInflationPct" type="number" step="0.1" value="2.0" inputmode="decimal" />
+          </div>
+        </div>
+        <p>These are assumptions (not predictions). Keep them conservative.</p>
       </div>
 
       <div class="btns">
-        <button id="calcBtn">Calculate</button>
-        <button id="resetBtn" class="secondary">Reset</button>
+        <button id="calcBtn" type="button">Calculate</button>
+        <button id="resetBtn" class="secondary" type="button">Reset</button>
       </div>
 
       <div id="error" class="err" role="alert" aria-live="polite"></div>
@@ -101,143 +145,163 @@
     <section class="card sticky">
       <div class="title">Sticky results</div>
       <div class="kpis">
-        <div class="metric"><div class="k">Renting (monthly)</div><div class="v" id="rentMonthly">—</div></div>
-        <div class="metric"><div class="k">Buying (monthly)</div><div class="v" id="buyMonthly">—</div></div>
-        <div class="metric"><div class="k">Difference (buy − rent)</div><div class="v" id="diffMonthly">—</div></div>
+        <div class="metric"><div class="k">Renting (monthly)</div><div class="v" id="out_rentMonthly">—</div></div>
+        <div class="metric"><div class="k">Buying (monthly)</div><div class="v" id="out_buyMonthly">—</div></div>
+        <div class="metric"><div class="k">Difference (buy − rent)</div><div class="v" id="out_diffMonthly">—</div></div>
       </div>
       <div class="hr"></div>
       <div class="kpis">
-        <div class="metric"><div class="k">Total paid over horizon (rent)</div><div class="v" id="rentTotal">—</div></div>
-        <div class="metric"><div class="k">Total paid over horizon (buy)</div><div class="v" id="buyTotal">—</div></div>
+        <div class="metric"><div class="k">Total paid over horizon (rent)</div><div class="v" id="out_rentTotal">—</div></div>
+        <div class="metric"><div class="k">Total paid over horizon (buy)</div><div class="v" id="out_buyTotal">—</div></div>
+      </div>
+      <div class="hr"></div>
+      <div class="kpis">
+        <div class="metric"><div class="k">Upfront buy costs (SDLT + fees)</div><div class="v" id="out_upfront">—</div></div>
+        <div class="metric"><div class="k">Equity after horizon (rough)</div><div class="v" id="out_equity">—</div></div>
+        <div class="metric"><div class="k">Buy net cost (paid + upfront − equity)</div><div class="v" id="out_net">—</div></div>
       </div>
       <p class="note" style="margin-top:10px;">
-        Interpretation: this is a <strong>cashflow</strong> comparison. Buying can still “win” long-term due to equity/build-up and house price changes,
-        but those depend on assumptions — we’ll add an advanced mode later.
+        Interpretation: “Buy net cost” is a simplified estimate of how much cash you effectively spent after selling.
+        It depends heavily on assumptions (growth, fees, rates). Not financial advice.
       </p>
     </section>
 
     <section class="card" style="grid-column:1/-1;">
-      <div class="title">How this works (plain English)</div>
+      <div class="title">Explain like I’m busy</div>
       <p class="note">
-        We compute the mortgage payment from price, deposit, rate, and term.
-        Then we add your estimated monthly owner costs.
-        Renting cost is your rent plus optional rent-side extras.
+        Renting is mostly a straight line: rent goes out. Buying is lumpy: big upfront costs (SDLT, legal fees), then monthly payments,
+        and later you may get money back when you sell (equity) — but selling has costs too.
       </p>
-      <div class="hr"></div>
-      <div class="title">Next improvements (planned)</div>
-      <ul class="note" style="margin:8px 0 0 18px;">
-        <li>Advanced mode: house price growth, investment return on deposit, and transaction costs (SDLT, legal fees).</li>
-        <li>London-specific presets (typical service charge ranges) you can override.</li>
-        <li>Break-even chart.</li>
-      </ul>
     </section>
   </main>
 
 <script type="module">
+  import { rentVsBuy } from "../src/rent-buy.js";
+
   const el = (id) => document.getElementById(id);
-  const fmtGBP = (x) => {
+  const fmtGBP0 = (x) => {
     if (!isFinite(x)) return '—';
-    return new Intl.NumberFormat('en-GB', {style:'currency', currency:'GBP', maximumFractionDigits: 0}).format(x);
+    return new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP',maximumFractionDigits:0}).format(x);
   };
 
-  function mortgagePaymentMonthly(principal, annualRatePct, years){
-    const r = (annualRatePct/100)/12;
-    const n = years*12;
-    if (n <= 0) return NaN;
-    if (r === 0) return principal/n;
-    return principal * (r * Math.pow(1+r, n)) / (Math.pow(1+r, n)-1);
-  }
+  function num(id){ return Number(el(id).value); }
 
-  function validateNum(name, v, {min=0, max=Infinity}={}){
-    if (!isFinite(v)) return `${name} is required.`;
-    if (v < min) return `${name} must be at least ${min}.`;
-    if (v > max) return `${name} must be at most ${max}.`;
+  function validate(){
+    const pairs = [
+      ['Monthly rent', num('rentMonthly'), 0, Infinity],
+      ['Extra monthly costs', num('rentExtraMonthly'), 0, Infinity],
+      ['Property price', num('price'), 0, Infinity],
+      ['Deposit (%)', num('depositPct'), 0, 100],
+      ['Mortgage rate (%)', num('mortgageRatePct'), 0, 100],
+      ['Term (years)', num('termYears'), 1, 60],
+      ['Owner monthly costs', num('ownerMonthlyCosts'), 0, Infinity],
+      ['Horizon (years)', num('horizonYears'), 1, 60],
+      ['Selling cost %', num('sellingCostPct'), 0, 10],
+    ];
+    for (const [name,v,min,max] of pairs){
+      if (!isFinite(v)) return `${name} is required.`;
+      if (v < min) return `${name} must be at least ${min}.`;
+      if (v > max) return `${name} must be at most ${max}.`;
+    }
     return null;
   }
 
   function syncUrl(){
     const u = new URL(window.location.href);
-    ['rent','rentBills','price','depositPct','rate','years','fees','horizon'].forEach((k)=>u.searchParams.set(k, el(k).value));
+    [
+      'rentMonthly','rentExtraMonthly','price','depositPct','mortgageRatePct','termYears','ownerMonthlyCosts','horizonYears',
+      'includeSdlt','sellingCostPct','legalFees','saleLegalFees','surveyFees','priceGrowthPct','rentInflationPct','ownerCostInflationPct'
+    ].forEach((k)=>u.searchParams.set(k, el(k).value));
     window.history.replaceState({}, '', u.pathname + u.search);
   }
 
   function calc(){
     el('error').textContent = '';
-    const rent = Number(el('rent').value);
-    const rentBills = Number(el('rentBills').value);
-    const price = Number(el('price').value);
-    const depositPct = Number(el('depositPct').value);
-    const rate = Number(el('rate').value);
-    const years = Number(el('years').value);
-    const fees = Number(el('fees').value);
-    const horizon = Number(el('horizon').value);
+    const err = validate();
+    if (err){ el('error').textContent = err; return; }
 
-    const errs = [
-      validateNum('Monthly rent', rent, {min:0}),
-      validateNum('Extra monthly costs', rentBills, {min:0}),
-      validateNum('Property price', price, {min:0}),
-      validateNum('Deposit (%)', depositPct, {min:0, max:100}),
-      validateNum('Mortgage rate (%)', rate, {min:0}),
-      validateNum('Term (years)', years, {min:1}),
-      validateNum('Buyer monthly costs', fees, {min:0}),
-      validateNum('Horizon (years)', horizon, {min:1, max:60}),
-    ].filter(Boolean);
+    const out = rentVsBuy({
+      rentMonthly: num('rentMonthly'),
+      rentExtraMonthly: num('rentExtraMonthly'),
+      price: num('price'),
+      depositPct: num('depositPct'),
+      mortgageRatePct: num('mortgageRatePct'),
+      termYears: num('termYears'),
+      ownerMonthlyCosts: num('ownerMonthlyCosts'),
+      horizonYears: num('horizonYears'),
+      includeSdlt: el('includeSdlt').value === 'yes',
+      sellingCostPct: num('sellingCostPct'),
+      legalFees: num('legalFees'),
+      saleLegalFees: num('saleLegalFees'),
+      surveyFees: num('surveyFees'),
+      priceGrowthPct: num('priceGrowthPct'),
+      rentInflationPct: num('rentInflationPct'),
+      ownerCostInflationPct: num('ownerCostInflationPct'),
+    });
 
-    if (errs.length){
-      el('error').textContent = errs[0];
-      return;
-    }
+    el('out_rentMonthly').textContent = fmtGBP0(out.rentMonthly0);
+    el('out_buyMonthly').textContent = fmtGBP0(out.ownerMonthly);
+    el('out_diffMonthly').textContent = fmtGBP0(out.ownerMonthly - out.rentMonthly0);
 
-    const deposit = price * (depositPct/100);
-    const principal = Math.max(0, price - deposit);
-    const m = mortgagePaymentMonthly(principal, rate, years);
+    el('out_rentTotal').textContent = fmtGBP0(out.rentTotal);
+    el('out_buyTotal').textContent = fmtGBP0(out.buyTotal);
 
-    const rentMonthly = rent + rentBills;
-    const buyMonthly = m + fees;
-    const diffMonthly = buyMonthly - rentMonthly;
-
-    const months = Math.round(horizon * 12);
-    const rentTotal = rentMonthly * months;
-    const buyTotal = buyMonthly * months;
-
-    el('rentMonthly').textContent = fmtGBP(rentMonthly);
-    el('buyMonthly').textContent = fmtGBP(buyMonthly);
-    el('diffMonthly').textContent = fmtGBP(diffMonthly);
-
-    el('rentTotal').textContent = fmtGBP(rentTotal);
-    el('buyTotal').textContent = fmtGBP(buyTotal);
+    el('out_upfront').textContent = fmtGBP0(out.buyUpfront);
+    el('out_equity').textContent = fmtGBP0(out.equity);
+    el('out_net').textContent = fmtGBP0(out.buyNetCost);
 
     syncUrl();
   }
 
   function reset(){
-    el('rent').value = 2200;
-    el('rentBills').value = 0;
+    el('rentMonthly').value = 2200;
+    el('rentExtraMonthly').value = 0;
     el('price').value = 550000;
     el('depositPct').value = 15;
-    el('rate').value = 4.5;
-    el('years').value = 30;
-    el('fees').value = 250;
-    el('horizon').value = 5;
+    el('mortgageRatePct').value = 4.5;
+    el('termYears').value = 30;
+    el('ownerMonthlyCosts').value = 250;
+    el('horizonYears').value = 5;
+
+    el('includeSdlt').value = 'yes';
+    el('sellingCostPct').value = 1.5;
+    el('legalFees').value = 1800;
+    el('saleLegalFees').value = 1200;
+    el('surveyFees').value = 600;
+    el('priceGrowthPct').value = 2.0;
+    el('rentInflationPct').value = 3.0;
+    el('ownerCostInflationPct').value = 2.0;
+
     const u = new URL(window.location.href);
-    ['rent','rentBills','price','depositPct','rate','years','fees','horizon'].forEach((k)=>u.searchParams.delete(k));
+    [...u.searchParams.keys()].forEach((k)=>u.searchParams.delete(k));
     window.history.replaceState({}, '', u.pathname + u.search);
+
     calc();
   }
 
   (function initFromUrl(){
     const u = new URL(window.location.href);
-    ['rent','rentBills','price','depositPct','rate','years','fees','horizon'].forEach((k)=>{
+    [
+      'rentMonthly','rentExtraMonthly','price','depositPct','mortgageRatePct','termYears','ownerMonthlyCosts','horizonYears',
+      'includeSdlt','sellingCostPct','legalFees','saleLegalFees','surveyFees','priceGrowthPct','rentInflationPct','ownerCostInflationPct'
+    ].forEach((k)=>{
       const v = u.searchParams.get(k);
-      if (v != null) el(k).value = v;
+      if (v != null && el(k)) el(k).value = v;
     });
   })();
 
-  ['rent','rentBills','price','depositPct','rate','years','fees','horizon'].forEach((id)=>{
-    el(id).addEventListener('input', calc);
+  // live calc
+  [
+    'rentMonthly','rentExtraMonthly','price','depositPct','mortgageRatePct','termYears','ownerMonthlyCosts','horizonYears',
+    'includeSdlt','sellingCostPct','legalFees','saleLegalFees','surveyFees','priceGrowthPct','rentInflationPct','ownerCostInflationPct'
+  ].forEach((id)=>{
+    const node = el(id);
+    const evt = (node.tagName === 'SELECT') ? 'change' : 'input';
+    node.addEventListener(evt, calc);
   });
-  el('calcBtn').addEventListener('click', (e)=>{e.preventDefault();calc();});
-  el('resetBtn').addEventListener('click', (e)=>{e.preventDefault();reset();});
+
+  el('calcBtn').addEventListener('click', calc);
+  el('resetBtn').addEventListener('click', reset);
 
   calc();
 </script>

@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Buy‑to‑Let Yield (UK) + After‑Tax Cashflow (Section 24) | mortgage-cal.uk</title>
+  <link rel="canonical" href="https://mortgage-cal.uk/calculators/buy-to-let-yield.html" />
+  <meta name="description" content="UK buy-to-let calculator: gross yield, net yield, and simplified after-tax cashflow including Section 24 mortgage interest relief restriction. No cookies." />
+  <link rel="stylesheet" href="../src/site.css" />
+</head>
+<body>
+  <header class="header">
+    <h1 class="h1">Buy‑to‑let yield + after‑tax cashflow (UK)</h1>
+    <p class="sub">Gross yield, net yield, and a simplified Section 24 after‑tax view. Mobile‑first, no cookies.</p>
+  </header>
+
+  <nav class="nav" aria-label="Site sections">
+    <div class="tabs">
+      <a class="tab" href="../index.html">Home</a>
+      <a class="tab active" href="./index.html">Calculators</a>
+      <a class="tab" href="../articles.html">Articles</a>
+      <a class="tab" href="../privacy.html">Privacy</a>
+    </div>
+  </nav>
+
+  <main class="wrap grid">
+    <section class="card">
+      <div class="title">Inputs</div>
+
+      <div class="row">
+        <div class="field">
+          <label for="price">Property price (£)</label>
+          <input id="price" type="number" min="0" step="1000" value="300000" inputmode="decimal" />
+        </div>
+        <div class="field">
+          <label for="rent">Monthly rent (£)</label>
+          <input id="rent" type="number" min="0" step="10" value="1600" inputmode="decimal" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="expenses">Monthly running costs (£)</label>
+          <input id="expenses" type="number" min="0" step="10" value="250" inputmode="decimal" />
+        </div>
+        <div class="field">
+          <label for="voidsPct">Voids/maintenance buffer (% of rent)</label>
+          <input id="voidsPct" type="number" min="0" max="100" step="0.1" value="5" inputmode="decimal" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="mortgageBalance">Mortgage balance (£)</label>
+          <input id="mortgageBalance" type="number" min="0" step="1000" value="200000" inputmode="decimal" />
+        </div>
+        <div class="field">
+          <label for="mortgageRate">Interest rate (%) (interest‑only assumption)</label>
+          <input id="mortgageRate" type="number" min="0" step="0.01" value="5.5" inputmode="decimal" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="taxBand">Income tax band (for rental profit)</label>
+          <select id="taxBand">
+            <option value="0.20" selected>Basic rate (20%)</option>
+            <option value="0.40">Higher rate (40%)</option>
+            <option value="0.45">Additional rate (45%)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="section24">Apply Section 24 model?</label>
+          <select id="section24">
+            <option value="yes" selected>Yes (simplified: 20% tax credit on interest)</option>
+            <option value="no">No (treat interest as deductible — legacy / not typical)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="btns">
+        <button id="calcBtn" type="button">Calculate</button>
+        <button id="resetBtn" class="secondary" type="button">Reset</button>
+      </div>
+
+      <div id="error" class="err" role="alert" aria-live="polite"></div>
+
+      <p class="note">
+        Disclaimer: this is a simplified educational model. Real tax depends on your full situation, allowable expenses, accounting basis, and legislation.
+      </p>
+    </section>
+
+    <section class="card sticky">
+      <div class="title">Results (annual)</div>
+      <div class="kpis">
+        <div class="metric"><div class="k">Gross yield</div><div class="v" id="grossYield">—</div></div>
+        <div class="metric"><div class="k">Net yield (before tax)</div><div class="v" id="netYield">—</div></div>
+      </div>
+      <div class="hr"></div>
+      <div class="kpis">
+        <div class="metric"><div class="k">Rental income</div><div class="v" id="income">—</div></div>
+        <div class="metric"><div class="k">Costs + buffer</div><div class="v" id="costs">—</div></div>
+        <div class="metric"><div class="k">Mortgage interest</div><div class="v" id="interest">—</div></div>
+        <div class="metric"><div class="k">Estimated tax on rent</div><div class="v" id="tax">—</div></div>
+        <div class="metric"><div class="k">After‑tax cashflow</div><div class="v" id="cashflow">—</div></div>
+      </div>
+    </section>
+
+    <section class="card" style="grid-column:1/-1;">
+      <div class="title">How the after‑tax model works (Section 24 simplified)</div>
+      <div class="note" style="font-size:14px;">
+        <ol style="margin:0;padding-left:18px;">
+          <li>We compute <strong>annual rent</strong> and subtract running costs and a voids buffer.</li>
+          <li>With Section 24: we compute tax on profit <em>before</em> mortgage interest, then apply a <strong>20% tax credit</strong> on mortgage interest.</li>
+          <li>After‑tax cashflow = rent − costs − interest − tax.</li>
+        </ol>
+        <p class="note" style="margin-top:10px;">This is intentionally conservative and transparent, not “optimised”.</p>
+      </div>
+    </section>
+  </main>
+
+<script type="module">
+  const el = (id) => document.getElementById(id);
+  const fmtGBP0 = (x) => new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP',maximumFractionDigits:0}).format(x);
+
+  function validateNum(name, v, {min=0, max=Infinity}={}){
+    if (!isFinite(v)) return `${name} is required.`;
+    if (v < min) return `${name} must be at least ${min}.`;
+    if (v > max) return `${name} must be at most ${max}.`;
+    return null;
+  }
+
+  function syncUrl(){
+    const u = new URL(window.location.href);
+    ['price','rent','expenses','voidsPct','mortgageBalance','mortgageRate','taxBand','section24'].forEach((k)=>u.searchParams.set(k, el(k).value));
+    window.history.replaceState({}, '', u.pathname + u.search);
+  }
+
+  function calc(){
+    el('error').textContent = '';
+
+    const price = Number(el('price').value);
+    const rentM = Number(el('rent').value);
+    const expensesM = Number(el('expenses').value);
+    const voidsPct = Number(el('voidsPct').value);
+    const mb = Number(el('mortgageBalance').value);
+    const mr = Number(el('mortgageRate').value);
+    const taxBand = Number(el('taxBand').value);
+    const s24 = el('section24').value === 'yes';
+
+    const errs = [
+      validateNum('Property price', price, {min:0}),
+      validateNum('Monthly rent', rentM, {min:0}),
+      validateNum('Monthly costs', expensesM, {min:0}),
+      validateNum('Voids buffer %', voidsPct, {min:0, max:100}),
+      validateNum('Mortgage balance', mb, {min:0}),
+      validateNum('Interest rate %', mr, {min:0, max:100}),
+    ].filter(Boolean);
+
+    if (errs.length){ el('error').textContent = errs[0]; return; }
+
+    const rentA = rentM * 12;
+    const bufferA = rentA * (voidsPct/100);
+    const costsA = expensesM * 12 + bufferA;
+    const interestA = mb * (mr/100);
+
+    const grossYield = price > 0 ? (rentA / price) : 0;
+    const netBeforeTax = price > 0 ? ((rentA - costsA - interestA) / price) : 0;
+
+    // Tax models
+    let tax;
+    if (s24){
+      const taxableProfit = Math.max(0, rentA - costsA); // interest not deductible
+      const taxBeforeCredit = taxableProfit * taxBand;
+      const credit = interestA * 0.20;
+      tax = Math.max(0, taxBeforeCredit - credit);
+    } else {
+      const taxableProfit = Math.max(0, rentA - costsA - interestA);
+      tax = taxableProfit * taxBand;
+    }
+
+    const cashflow = rentA - costsA - interestA - tax;
+
+    el('grossYield').textContent = (grossYield*100).toFixed(2) + '%';
+    el('netYield').textContent = (netBeforeTax*100).toFixed(2) + '%';
+
+    el('income').textContent = fmtGBP0(rentA);
+    el('costs').textContent = fmtGBP0(costsA);
+    el('interest').textContent = fmtGBP0(interestA);
+    el('tax').textContent = fmtGBP0(tax);
+    el('cashflow').textContent = fmtGBP0(cashflow);
+
+    syncUrl();
+  }
+
+  function reset(){
+    el('price').value = 300000;
+    el('rent').value = 1600;
+    el('expenses').value = 250;
+    el('voidsPct').value = 5;
+    el('mortgageBalance').value = 200000;
+    el('mortgageRate').value = 5.5;
+    el('taxBand').value = '0.20';
+    el('section24').value = 'yes';
+
+    const u = new URL(window.location.href);
+    ['price','rent','expenses','voidsPct','mortgageBalance','mortgageRate','taxBand','section24'].forEach((k)=>u.searchParams.delete(k));
+    window.history.replaceState({}, '', u.pathname + u.search);
+    calc();
+  }
+
+  (function initFromUrl(){
+    const u = new URL(window.location.href);
+    ['price','rent','expenses','voidsPct','mortgageBalance','mortgageRate','taxBand','section24'].forEach((k)=>{
+      const v = u.searchParams.get(k);
+      if (v != null) el(k).value = v;
+    });
+  })();
+
+  ['price','rent','expenses','voidsPct','mortgageBalance','mortgageRate','taxBand','section24'].forEach((id)=>{
+    const node = el(id);
+    const evt = (node.tagName === 'SELECT') ? 'change' : 'input';
+    node.addEventListener(evt, calc);
+  });
+  el('calcBtn').addEventListener('click', calc);
+  el('resetBtn').addEventListener('click', reset);
+
+  calc();
+</script>
+</body>
+</html>

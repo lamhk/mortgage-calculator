@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>UK Take‑Home Pay Calculator 2025/26 (PAYE + Student Loan) | mortgage-cal.uk</title>
+  <link rel="canonical" href="https://mortgage-cal.uk/calculators/take-home-pay.html" />
+  <meta name="description" content="UK take-home pay calculator for 2025/26: income tax, employee NI (Category A), and Student Loan (Plan 1/2/4/5/PG). Mobile-first. No cookies." />
+  <link rel="stylesheet" href="../src/site.css" />
+</head>
+<body>
+  <header class="header">
+    <h1 class="h1">UK take‑home pay calculator (2025/26)</h1>
+    <p class="sub">PAYE-employed, simplified model: Income Tax + employee NI (Category A) + Student Loan plans. No cookies.</p>
+  </header>
+
+  <nav class="nav" aria-label="Site sections">
+    <div class="tabs">
+      <a class="tab" href="../index.html">Home</a>
+      <a class="tab active" href="./index.html">Calculators</a>
+      <a class="tab" href="../articles.html">Articles</a>
+      <a class="tab" href="../privacy.html">Privacy</a>
+    </div>
+  </nav>
+
+  <main class="wrap grid">
+    <section class="card">
+      <div class="title">Inputs</div>
+
+      <div class="row">
+        <div class="field">
+          <label for="gross">Gross salary (per year, £)</label>
+          <input id="gross" type="number" min="0" step="500" value="60000" inputmode="decimal" />
+        </div>
+        <div class="field">
+          <label for="student">Student loan plan</label>
+          <select id="student">
+            <option value="none" selected>None</option>
+            <option value="plan1">Plan 1</option>
+            <option value="plan2">Plan 2</option>
+            <option value="plan4">Plan 4</option>
+            <option value="plan5">Plan 5</option>
+            <option value="pg">Postgraduate Loan</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="pensionPct">Pension contribution (%)</label>
+          <input id="pensionPct" type="number" min="0" max="100" step="0.1" value="5" inputmode="decimal" />
+        </div>
+        <div class="field">
+          <label for="pensionMethod">Pension method</label>
+          <select id="pensionMethod">
+            <option value="salarySacrifice" selected>Salary sacrifice (reduces tax + NI)</option>
+            <option value="none">Ignore pension (rough estimate)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="btns">
+        <button id="calcBtn" type="button">Calculate</button>
+        <button id="resetBtn" class="secondary" type="button">Reset</button>
+      </div>
+
+      <div id="error" class="err" role="alert" aria-live="polite"></div>
+
+      <p class="note">
+        Shareable link: inputs are stored in the URL querystring (visible) instead of cookies.
+        <br>
+        This version uses England/Wales/NI income tax bands (not Scotland) and employee NI Category A.
+      </p>
+    </section>
+
+    <section class="card sticky">
+      <div class="title">Results</div>
+      <div class="kpis">
+        <div class="metric"><div class="k">Net pay (monthly)</div><div class="v" id="netMonthly">—</div></div>
+        <div class="metric"><div class="k">Net pay (yearly)</div><div class="v" id="netAnnual">—</div></div>
+      </div>
+      <div class="hr"></div>
+      <div class="kpis">
+        <div class="metric"><div class="k">Income Tax</div><div class="v" id="tax">—</div></div>
+        <div class="metric"><div class="k">Employee NI</div><div class="v" id="ni">—</div></div>
+        <div class="metric"><div class="k">Student loan</div><div class="v" id="sl">—</div></div>
+        <div class="metric"><div class="k">Pension (salary sacrifice)</div><div class="v" id="pension">—</div></div>
+      </div>
+      <p class="note" id="meta" style="margin-top:10px;"></p>
+    </section>
+
+    <section class="card" style="grid-column:1/-1;">
+      <div class="title">How this calculator works</div>
+      <div class="note" style="font-size:14px;">
+        <ul style="margin:0;padding-left:18px;">
+          <li><strong>Personal Allowance:</strong> £12,570 (tapers down above £100,000).</li>
+          <li><strong>Income tax bands:</strong> 20% / 40% / 45% on taxable income (England/Wales/NI model).</li>
+          <li><strong>Employee NI (Category A):</strong> 0% up to threshold, then 8%, then 2% above upper limit.</li>
+          <li><strong>Student loan:</strong> a % of income above your plan threshold (simplified annual calculation).</li>
+        </ul>
+        <p class="note" style="margin-top:10px;">
+          Disclaimer: general information only; not financial advice. Real payslips can differ (tax codes, benefits, bonus timing, Scotland rates, etc.).
+        </p>
+      </div>
+    </section>
+  </main>
+
+<script type="module">
+  import { takeHomePay, UKPAY_META } from "../src/uk-pay.js";
+
+  const el = (id) => document.getElementById(id);
+  const fmtGBP0 = (x) => new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP',maximumFractionDigits:0}).format(x);
+
+  function validate(){
+    const gross = Number(el('gross').value);
+    const pensionPct = Number(el('pensionPct').value);
+    if (!isFinite(gross) || gross < 0) return 'Enter a valid gross salary.';
+    if (!isFinite(pensionPct) || pensionPct < 0 || pensionPct > 100) return 'Pension % must be between 0 and 100.';
+    return null;
+  }
+
+  function syncUrl(){
+    const u = new URL(window.location.href);
+    ['gross','student','pensionPct','pensionMethod'].forEach((k)=>u.searchParams.set(k, el(k).value));
+    window.history.replaceState({}, '', u.pathname + u.search);
+  }
+
+  function calc(){
+    el('error').textContent = '';
+    const err = validate();
+    if (err){
+      el('error').textContent = err;
+      return;
+    }
+
+    const out = takeHomePay({
+      grossAnnual: Number(el('gross').value),
+      pensionPct: Number(el('pensionPct').value),
+      pensionMethod: el('pensionMethod').value,
+      studentLoanPlan: el('student').value,
+    });
+
+    el('netMonthly').textContent = fmtGBP0(out.netMonthly);
+    el('netAnnual').textContent = fmtGBP0(out.netAnnual);
+    el('tax').textContent = fmtGBP0(out.incomeTax);
+    el('ni').textContent = fmtGBP0(out.ni);
+    el('sl').textContent = fmtGBP0(out.studentLoan);
+    el('pension').textContent = fmtGBP0(out.pensionAnnual);
+
+    el('meta').textContent = `Tax year model: ${UKPAY_META.taxYearLabel}. Captured on ${UKPAY_META.capturedOn}.`;
+
+    syncUrl();
+  }
+
+  function reset(){
+    el('gross').value = 60000;
+    el('student').value = 'none';
+    el('pensionPct').value = 5;
+    el('pensionMethod').value = 'salarySacrifice';
+    const u = new URL(window.location.href);
+    ['gross','student','pensionPct','pensionMethod'].forEach((k)=>u.searchParams.delete(k));
+    window.history.replaceState({}, '', u.pathname + u.search);
+    calc();
+  }
+
+  (function initFromUrl(){
+    const u = new URL(window.location.href);
+    ['gross','student','pensionPct','pensionMethod'].forEach((k)=>{
+      const v = u.searchParams.get(k);
+      if (v != null) el(k).value = v;
+    });
+  })();
+
+  ['gross','student','pensionPct','pensionMethod'].forEach((id)=>{
+    const node = el(id);
+    const evt = (node.tagName === 'SELECT') ? 'change' : 'input';
+    node.addEventListener(evt, calc);
+  });
+  el('calcBtn').addEventListener('click', calc);
+  el('resetBtn').addEventListener('click', reset);
+
+  calc();
+</script>
+</body>
+</html>
