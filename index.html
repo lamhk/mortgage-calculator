@@ -3,664 +3,93 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>UK Mortgage Calculator + Guides | mortgage-cal.uk</title>
+  <title>UK Mortgage & Finance Advice Centre (No Cookies) | mortgage-cal.uk</title>
   <link rel="canonical" href="https://mortgage-cal.uk/" />
-  <meta name="description" content="UK mortgage and shared ownership calculator, plus plain-English guides on LTV, fixed vs tracker, first-time buyer steps and buying costs (EN/繁體中文)." />
-  <style>
-    :root { --bg:#0b1220; --card:#111a2e; --text:#e7ecff; --muted:#a7b0d6; --line:#243155; --link:#b8c2ff; --inputBg:#0b2447; --inputBorder:#355a9a; }
-    body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background: var(--bg); color: var(--text); }
-    header { padding: 24px 16px 8px; max-width: 980px; margin: 0 auto; }
-    h1 { margin: 0 0 6px; font-size: 22px; }
-    p  { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.4; }
-
-    /* NAV / TABS (Change #2) */
-    .nav { max-width: 980px; margin: 0 auto; padding: 0 16px; }
-    .tabs { display:flex; gap: 8px; flex-wrap: wrap; margin: 10px 0 0; }
-    .tab {
-      border: 1px solid var(--line);
-      background: #0e1730;
-      color: var(--text);
-      padding: 8px 10px;
-      border-radius: 999px;
-      font-size: 13px;
-      text-decoration: none;
-      display:inline-flex;
-      align-items:center;
-      gap: 6px;
-    }
-    .tab.active { background: #2b3fff; border-color: #2b3fff; }
-    .tab:hover { filter: brightness(1.08); text-decoration: none; }
-
-    .badge-new {
-      font-size: 10px;
-      font-weight: 800;
-      letter-spacing: .3px;
-      text-transform: uppercase;
-      padding: 2px 6px;
-      border-radius: 999px;
-      background: #22c55e;
-      color: #06220f;
-      border: 1px solid rgba(0,0,0,.15);
-      line-height: 1;
-    }
-
-    main { max-width: 980px; margin: 0 auto; padding: 16px; }
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
-
-    .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
-    .section-title { font-weight: 650; margin: 0 0 10px; font-size: 14px; color: var(--text); }
-
-    .row { display:flex; gap: 10px; flex-wrap: wrap; }
-    .field { flex: 1 1 190px; display:flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
-    label { font-size: 12px; color: var(--muted); }
-    input, select {
-      background: var(--inputBg); color: var(--text);
-      border: 1px solid var(--inputBorder); border-radius: 10px;
-      padding: 10px 10px; font-size: 14px; outline: none;
-    }
-    input::placeholder { color: rgba(231,236,255,.55); }
-    input:focus, select:focus { border-color: #7aa2ff; box-shadow: 0 0 0 3px rgba(122,162,255,.22); }
-
-    .toggle-row { display:flex; align-items:center; justify-content: space-between; gap: 10px; padding: 10px; border: 1px dashed var(--line); border-radius: 12px; background:#0e1730; }
-    .toggle-row small { color: var(--muted); display:block; margin-top: 2px; }
-    .switch { position: relative; width: 44px; height: 26px; flex: 0 0 auto; }
-    .switch input { display:none; }
-    .slider { position:absolute; inset:0; background: rgba(11,36,71,.85); border:1px solid var(--inputBorder); border-radius: 999px; cursor:pointer; transition:.2s; }
-    .slider:before { content:""; position:absolute; height:20px; width:20px; left:3px; top:2px; background:#cbd5ff; border-radius:999px; transition:.2s; }
-    .switch input:checked + .slider { background:#22c55e; border-color:#22c55e; }
-    .switch input:checked + .slider:before { transform: translateX(18px); background:#06220f; }
-
-    .btns { display:flex; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
-    button {
-      border: 1px solid var(--line); border-radius: 12px;
-      background: #2b3fff; color: #fff; padding: 10px 12px;
-      font-weight: 650; cursor:pointer;
-    }
-    button.secondary { background: transparent; color: var(--text); }
-    button:hover { filter: brightness(1.05); }
-
-    .out { display:grid; grid-template-columns: 1fr; gap: 10px; }
-    .metric {
-      padding: 12px; border: 1px solid var(--line); border-radius: 12px; background:#0e1730;
-      display:flex; justify-content: space-between; align-items: baseline; gap: 10px;
-    }
-    .metric .k { color: var(--muted); font-size: 12px; }
-    .metric .v { font-size: 18px; font-weight: 750; }
-    .note { color: var(--muted); font-size: 12px; line-height: 1.45; margin-top: 8px; }
-    .error { color:#ffb4b4; font-size: 12px; margin-top: 8px; }
-
-    a { color: var(--link); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-
-    .snap-wrap { max-width: 980px; margin: 0 auto; padding: 0 16px 18px; }
-    .snap-title { margin: 10px 0 8px; font-size: 13px; font-weight: 650; color: var(--text); }
-    .snap-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    @media (max-width: 860px) { .snap-grid { grid-template-columns: 1fr; } }
-
-    .inline-help {
-      display:flex; justify-content: space-between; align-items: center; gap: 10px;
-      padding: 10px; border: 1px solid var(--line); border-radius: 12px;
-      background:#0e1730; margin-top: 10px;
-    }
-    .inline-help .text { color: var(--muted); font-size: 12px; line-height: 1.4; }
-    .inline-help .cta { font-size: 12px; font-weight: 650; white-space: nowrap; }
-
-    .callout {
-      background: rgba(34,197,94,.12);
-      border: 1px solid rgba(34,197,94,.45);
-      border-radius: 12px;
-      padding: 10px 12px;
-      margin-top: 10px;
-    }
-    .callout-title { font-weight: 750; font-size: 13px; margin: 0 0 6px; }
-    .callout-body { color: var(--muted); font-size: 12px; line-height: 1.45; margin: 0; }
-    .callout a { color: var(--text); text-decoration: underline; }
-  </style>
+  <meta name="description" content="Mobile-first UK mortgage and finance advice centre: mortgage calculators, property tax tools, salary/net pay calculators, and side-by-side comparisons. No cookies." />
+  <link rel="stylesheet" href="./src/site.css" />
 </head>
 <body>
-  <header>
-    <h1>Mortgage Calculator</h1>
-    <p>Monthly mortgage + (optional) shared ownership rent. Keeps your inputs when you open the explainer page (no cookies).</p>
+  <header class="header">
+    <div class="hero">
+      <div>
+        <h1 class="h1">Mortgage‑Cal: UK Finance & Mortgage Advice Centre</h1>
+        <p class="sub">Mobile‑first calculators + plain‑English explainers. No cookies (we only use URL parameters to carry inputs between pages).</p>
+      </div>
+      <div class="cta">
+        <a class="tab active" href="./index.html" aria-current="page">Home</a>
+        <a class="tab" href="./mortgage.html">Mortgage calculator</a>
+        <a class="tab" href="./articles.html">Articles <span class="badge">New</span></a>
+      </div>
+    </div>
   </header>
 
-  
-  <div class="nav" style="padding-top:10px;">
-    <div class="card" style="padding:12px 14px;">
-      <div class="section-title">Popular guides</div>
-      <div class="note" style="margin-top:0;">
-        <a href="./articles/first-time-buyer-guide.html">First-time buyer steps</a> ·
+  <nav class="nav" aria-label="Site sections">
+    <div class="tabs">
+      <a class="tab" href="./mortgage.html">Mortgage</a>
+      <a class="tab" href="./shared-ownership-explainer.html">Shared ownership</a>
+      <a class="tab" href="./news.html">News</a>
+      <a class="tab" href="./articles.html">Articles <span style="font-size:11px;color:var(--muted);">EN/繁</span></a>
+    </div>
+  </nav>
+
+  <main class="wrap">
+    <section class="card">
+      <div class="title">Start here</div>
+      <div class="list" role="list">
+        <div class="item" role="listitem">
+          <h3><a href="./mortgage.html">Mortgage payment calculator</a></h3>
+          <p>Repayment or interest‑only, weekly/fortnightly/monthly, offset balance, and optional shared ownership rent.</p>
+        </div>
+        <div class="item" role="listitem">
+          <h3><a href="./shared-ownership-explainer.html">Shared ownership explained</a></h3>
+          <p>Why ownership % changes monthly cost, what rent is charged on, and the traps to check in the lease.</p>
+        </div>
+      </div>
+      <div class="hr"></div>
+      <p class="note"><strong>Promise:</strong> no cookie banners. If we add analytics later, it will be cookieless (or opt‑in).</p>
+    </section>
+
+    <section class="card" style="margin-top:14px;">
+      <div class="title">High‑opportunity UK calculators (building now)</div>
+      <div class="list" role="list">
+        <div class="item" role="listitem">
+          <h3>UK Stamp Duty (SDLT) calculator <span class="pill">Coming next</span></h3>
+          <p>We’ll ship a banded SDLT calculator that’s easy to update when thresholds change, with examples + FAQs under the tool.</p>
+        </div>
+        <div class="item" role="listitem">
+          <h3>Buy‑to‑let yield + yield after tax <span class="pill">Planned</span></h3>
+          <p>Gross yield, net yield, and an after‑tax view (with a clear disclaimer). Includes Section 24 notes.</p>
+        </div>
+        <div class="item" role="listitem">
+          <h3>Take‑home pay (UK) <span class="pill">Planned</span></h3>
+          <p>PAYE with Student Loan Plan 1/2/5, pension contributions, and clear assumptions.</p>
+        </div>
+        <div class="item" role="listitem">
+          <h3>Rent vs Buy (London) comparison <span class="pill">Planned</span></h3>
+          <p>A scenario comparison (not just a formula): deposit, rates, rent inflation, and horizon. Built for mobile.</p>
+        </div>
+      </div>
+      <p class="note" style="margin-top:10px;">Want a specific calculator prioritised first (SDLT vs net pay vs rent/buy)? Tell me and I’ll build in that order.</p>
+    </section>
+
+    <section class="card" style="margin-top:14px;">
+      <div class="title">Popular guides</div>
+      <p class="note" style="margin:0;">
+        <a href="./articles/first-time-buyer-guide.html">First‑time buyer steps</a> ·
         <a href="./articles/ltv-vs-rates.html">LTV vs rates</a> ·
         <a href="./articles/fixed-vs-tracker.html">Fixed vs tracker</a> ·
         <a href="./articles/real-cost-of-buying-uk.html">Real cost of buying</a> ·
         <a href="./articles.html">All articles →</a>
-      </div>
-    </div>
-  </div>
-<!-- NAV / TABS (Change #2) -->
-  <div class="nav">
-    <div class="tabs" role="navigation" aria-label="Site sections">
-      <a class="tab active" href="./index.html">Calculator</a>
-      <a class="tab" href="./shared-ownership-explainer.html">Shared ownership explained</a>
-      <!-- Blog link hidden for now -->
-      <a class="tab" href="./news.html">News</a>
-      <a class="tab" href="./articles.html">Articles <span class="badge-new">New</span> <span style="font-size:11px;color:var(--muted);">EN/繁</span></a>
-    </div>
-  </div>
-
-  <main class="grid">
-    <section class="card">
-      <div class="section-title">Inputs</div>
-
-      <div class="row">
-        <div class="field">
-          <label for="price">Property price (£)</label>
-          <input id="price" type="number" min="0" step="1000" value="400000">
-        </div>
-        <div class="field">
-          <label for="downPct">Down payment (%)</label>
-          <input id="downPct" type="number" min="0" max="100" step="0.1" value="10">
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="field">
-          <label for="rate">Yearly mortgage rate (%)</label>
-          <input id="rate" type="number" min="0" step="0.01" value="4.5">
-        </div>
-        <div class="field">
-          <label for="years">Mortgage term (years)</label>
-          <input id="years" type="number" min="1" step="1" value="30">
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="field">
-          <label for="type">Payment type</label>
-          <select id="type">
-            <option value="repayment" selected>Repayment (capital + interest)</option>
-            <option value="interestOnly">Interest-only</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="frequency">Repayment frequency</label>
-          <select id="frequency">
-            <option value="monthly" selected>Monthly</option>
-            <option value="fortnightly">Fortnightly</option>
-            <option value="weekly">Weekly</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="field">
-          <label for="offsetBalance">Offset balance (£)</label>
-          <input id="offsetBalance" type="number" min="0" step="100" value="0">
-        </div>
-      </div>
-
-      <div class="callout" role="note" aria-label="Offset mortgage explainer">
-        <div class="callout-title">What is an offset mortgage?</div>
-        <p class="callout-body">
-          Money in an offset account reduces the balance you pay interest on (it usually <strong>does not</strong> reduce your loan balance).
-          Your repayment can look the same, but interest drops and you may finish sooner.
-          <a href="#" id="toggleOffsetExplainer">Show explanation ↓</a>
-        </p>
-      </div>
-
-      <div id="offsetExplainer" class="card" style="display:none;">
-        <div class="section-title">Offset mortgage: how this calculator treats it</div>
-        <div class="note" style="margin-top:0;">
-          <ul style="margin: 8px 0 0 18px;">
-            <li><strong>Effective principal</strong> = max(0, remaining balance − offset balance)</li>
-            <li><strong>Interest each period</strong> is calculated on the effective principal</li>
-            <li>Your <strong>payment amount</strong> stays the same for a standard repayment mortgage — the offset mainly changes the <strong>interest/principal split</strong></li>
-            <li>This calculator assumes the <strong>offset balance is constant</strong> (no deposits/withdrawals over time)</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="toggle-row" style="margin: 6px 0 10px;">
-        <div>
-          <div style="font-weight:650;">Shared ownership</div>
-          <small>If enabled, mortgage is calculated on the owned share; rent is added for the unowned share.</small>
-        </div>
-        <label class="switch" aria-label="Shared ownership">
-          <input id="sharedToggle" type="checkbox">
-          <span class="slider"></span>
-        </label>
-      </div>
-
-      <div id="ownershipBlock" style="display:none;">
-        <div class="row">
-          <div class="field">
-            <label for="ownPct">Ownership (%)</label>
-            <input id="ownPct" type="number" min="1" max="100" step="1" value="50">
-          </div>
-          <div class="field">
-            <label for="rentRatePct">Unowned share rent rate (%)</label>
-            <input id="rentRatePct" type="number" min="0" step="0.01" value="2.7">
-          </div>
-        </div>
-
-        <div class="inline-help">
-          <div class="text">
-            Want to understand why ownership % affects monthly cost? This explainer keeps your current inputs (no cookies).
-          </div>
-          <div class="cta">
-            <a id="explainerLinkTop" href="./shared-ownership-explainer.html">Learn why →</a>
-          </div>
-        </div>
-
-        <div class="note">
-          Rent rate is an <b>annual</b> % charged on the <b>unowned</b> share (default <b>2.7%</b>).
-        </div>
-      </div>
-
-      <div class="btns">
-        <button id="calcBtn">Calculate</button>
-        <button id="resetBtn" class="secondary">Reset</button>
-      </div>
-
-      <div id="error" class="error" role="alert" aria-live="polite"></div>
-      <div class="note">
-        Snapshots below show mortgage splits at the 13th and 25th payments (rent is added into total outpay).
-      </div>
+      </p>
     </section>
 
-    <section class="card">
-      <div class="section-title">Outputs</div>
-      <div class="out">
-        <div class="metric">
-          <div class="k">Mortgage payment (per selected frequency)</div>
-          <div class="v" id="mortgagePayment">—</div>
-        </div>
-        <div class="metric">
-          <div class="k">Interest this period (after offset)</div>
-          <div class="v" id="interestThisPeriod">—</div>
-        </div>
-        <div class="metric">
-          <div class="k">Estimated payoff time (based on offset)</div>
-          <div class="v" id="payoffTime">—</div>
-        </div>
-        <div class="metric">
-          <div class="k">Shared ownership rent (monthly)</div>
-          <div class="v" id="rentMonthly">—</div>
-        </div>
-        <div class="metric">
-          <div class="k">Total outpay (mortgage + rent)</div>
-          <div class="v" id="totalOutpay">—</div>
-        </div>
-        <div class="metric">
-          <div class="k">Loan principal (owned share)</div>
-          <div class="v" id="principal">—</div>
-        </div>
-        <div class="metric">
-          <div class="k">Deposit amount (owned share)</div>
-          <div class="v" id="deposit">—</div>
-        </div>
-      </div>
-
-      <div class="inline-help" style="margin-top:10px;">
-        <div class="text">
-          Amortization schedule shows interest after offset, principal repaid, remaining balance, and the effective principal used for interest.
-        </div>
-        <div class="cta"><a href="#" id="toggleSchedule">Show schedule ↓</a></div>
-      </div>
-      <div id="scheduleWrap" class="card" style="margin-top:10px; display:none;">
-        <div class="section-title">Amortization schedule (first 24 periods)</div>
-        <div style="overflow:auto;">
-          <table style="width:100%; border-collapse: collapse; font-size:12px;">
-            <thead>
-              <tr style="text-align:left; border-bottom:1px solid var(--line);">
-                <th style="padding:8px 6px;">Period</th>
-                <th style="padding:8px 6px;">Payment</th>
-                <th style="padding:8px 6px;">Interest (after offset)</th>
-                <th style="padding:8px 6px;">Principal repaid</th>
-                <th style="padding:8px 6px;">Remaining balance</th>
-                <th style="padding:8px 6px;">Effective principal</th>
-              </tr>
-            </thead>
-            <tbody id="scheduleBody"></tbody>
-          </table>
-        </div>
-        <div class="note" style="margin-top:10px;">Showing first 24 periods only. Offset balance assumed constant.</div>
-      </div>
-
-      <div class="note">
-        <a id="explainerLinkBottom" href="./shared-ownership-explainer.html">Why ownership % changes monthly costs →</a>
-      </div>
-      <div class="note" id="schemeNote"></div>
-    </section>
+    <footer class="wrap" style="padding:18px 16px 30px;">
+      <p class="note">
+        Disclaimer (2026): This site is for general information only and does not constitute financial, legal, or tax advice. Figures are estimates; always verify with your lender / housing association and a qualified adviser.
+        <br><br>
+        © 2026 Mortgage‑Cal. All rights reserved.
+      </p>
+    </footer>
   </main>
-
-  <div class="snap-wrap">
-    <div class="snap-title">Yearly change snapshots (mortgage split + total outpay)</div>
-    <div class="snap-grid">
-      <div class="card">
-        <div class="section-title">13th mortgage payment (start of year 2)</div>
-        <div class="out">
-          <div class="metric"><div class="k">Mortgage interest</div><div class="v" id="p13_interest">—</div></div>
-          <div class="metric"><div class="k">Mortgage capital</div><div class="v" id="p13_capital">—</div></div>
-          <div class="metric"><div class="k">Rent (monthly)</div><div class="v" id="p13_rent">—</div></div>
-          <div class="metric"><div class="k">Total outpay (monthly)</div><div class="v" id="p13_total">—</div></div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="section-title">25th mortgage payment (start of year 3)</div>
-        <div class="out">
-          <div class="metric"><div class="k">Mortgage interest</div><div class="v" id="p25_interest">—</div></div>
-          <div class="metric"><div class="k">Mortgage capital</div><div class="v" id="p25_capital">—</div></div>
-          <div class="metric"><div class="k">Rent (monthly)</div><div class="v" id="p25_rent">—</div></div>
-          <div class="metric"><div class="k">Total outpay (monthly)</div><div class="v" id="p25_total">—</div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- DISCLAIMER + COPYRIGHT (Change #1) -->
-    <div class="note" style="margin-top:10px;">
-      Disclaimer (2026): This calculator and accompanying explanations are for general information only and do not constitute financial, legal, or tax advice. Figures are estimates; always verify with your lender / housing association and a qualified adviser before making decisions.
-      <br><br>
-      © 2026 Mortgage-Cal. All rights reserved. Content is provided “as is” without warranties. Use at your own risk.
-    </div>
-  </div>
-
-<script type="module">
-  import { buildSchedule, periodsPerYear } from "./src/mortgage.js";
-
-  const el = (id) => document.getElementById(id);
-  const fmtGBP = (x) => {
-    if (!isFinite(x)) return "—";
-    return new Intl.NumberFormat("en-GB", { style:"currency", currency:"GBP", maximumFractionDigits: 2 }).format(x);
-  };
-
-  // --- No-cookie state in URL helpers ---
-  function b64urlEncode(str) {
-    return btoa(unescape(encodeURIComponent(str)))
-      .replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
-  }
-  function b64urlDecode(str) {
-    const padLen = (4 - (str.length % 4)) % 4;
-    const padded = str.replace(/-/g, "+").replace(/_/g, "/") + "=".repeat(padLen);
-    return decodeURIComponent(escape(atob(padded)));
-  }
-  function getQueryParam(name) {
-    const u = new URL(window.location.href);
-    return u.searchParams.get(name);
-  }
-  function setQueryParam(url, key, value) {
-    const u = new URL(url, window.location.origin);
-    u.searchParams.set(key, value);
-    return u.pathname + u.search;
-  }
-
-  function validateNumber(name, value, {min=-Infinity, max=Infinity}={}) {
-    if (value === "" || value === null || value === undefined || Number.isNaN(value)) return `${name} is required.`;
-    if (value < min) return `${name} must be at least ${min}.`;
-    if (value > max) return `${name} must be at most ${max}.`;
-    return null;
-  }
-
-  function calcSharedRentMonthly(propertyPrice, ownershipPct, rentRatePct) {
-    const unownedValue = propertyPrice * (1 - (ownershipPct / 100));
-    const annualRent = unownedValue * (rentRatePct / 100);
-    return annualRent / 12;
-  }
-
-  function setSnapshotsToDash() {
-    ["p13_interest","p13_capital","p13_rent","p13_total","p25_interest","p25_capital","p25_rent","p25_total"]
-      .forEach(id => el(id).textContent = "—");
-  }
-
-  function getStateFromInputs() {
-    return {
-      price: el("price").value,
-      downPct: el("downPct").value,
-      rate: el("rate").value,
-      years: el("years").value,
-      type: el("type").value,
-      frequency: el("frequency").value,
-      offsetBalance: el("offsetBalance").value,
-      shared: el("sharedToggle").checked ? 1 : 0,
-      ownPct: el("ownPct").value,
-      rentRatePct: el("rentRatePct").value,
-    };
-  }
-
-  function applyStateToInputs(state) {
-    if (!state || typeof state !== "object") return;
-
-    if (state.price != null) el("price").value = state.price;
-    if (state.downPct != null) el("downPct").value = state.downPct;
-    if (state.rate != null) el("rate").value = state.rate;
-    if (state.years != null) el("years").value = state.years;
-    if (state.type != null) el("type").value = state.type;
-    if (state.frequency != null) el("frequency").value = state.frequency;
-    if (state.offsetBalance != null) el("offsetBalance").value = state.offsetBalance;
-
-    const shared = state.shared === 1 || state.shared === "1" || state.shared === true || state.shared === "true";
-    el("sharedToggle").checked = shared;
-    el("ownershipBlock").style.display = shared ? "block" : "none";
-
-    if (state.ownPct != null) el("ownPct").value = state.ownPct;
-    if (state.rentRatePct != null) el("rentRatePct").value = state.rentRatePct;
-  }
-
-  function syncExplainerLinks() {
-    const state = getStateFromInputs();
-    const encoded = b64urlEncode(JSON.stringify(state));
-    const href = setQueryParam("./shared-ownership-explainer.html", "state", encoded);
-    el("explainerLinkTop").setAttribute("href", href);
-    el("explainerLinkBottom").setAttribute("href", href);
-  }
-
-  function renderSchedule(schedule) {
-    const tbody = el("scheduleBody");
-    const rows = schedule.slice(0, 24).map((r) => {
-      return `
-        <tr style="border-bottom:1px solid var(--line);">
-          <td style="padding:8px 6px;">${r.period}</td>
-          <td style="padding:8px 6px;">${fmtGBP(r.payment)}</td>
-          <td style="padding:8px 6px;">${fmtGBP(r.interest)}</td>
-          <td style="padding:8px 6px;">${fmtGBP(r.principalPaid)}</td>
-          <td style="padding:8px 6px;">${fmtGBP(r.balance)}</td>
-          <td style="padding:8px 6px;">${fmtGBP(r.effectivePrincipal)}</td>
-        </tr>`;
-    }).join("");
-    tbody.innerHTML = rows;
-  }
-
-  function calc() {
-    el("error").textContent = "";
-
-    const price = Number(el("price").value);
-    const downPct = Number(el("downPct").value);
-    const rate = Number(el("rate").value);
-    const years = Number(el("years").value);
-    const type = el("type").value;
-    const frequency = el("frequency").value;
-    const offsetBalance = Number(el("offsetBalance").value);
-
-    const shared = el("sharedToggle").checked;
-    const ownPct = shared ? Number(el("ownPct").value) : 100;
-    const rentRatePct = shared ? Number(el("rentRatePct").value) : 0;
-
-    const errs = [
-      validateNumber("Property price", price, {min:0}),
-      validateNumber("Down payment (%)", downPct, {min:0, max:100}),
-      validateNumber("Yearly mortgage rate (%)", rate, {min:0}),
-      validateNumber("Mortgage term (years)", years, {min:1}),
-      validateNumber("Offset balance (£)", offsetBalance, {min:0}),
-      shared ? validateNumber("Ownership (%)", ownPct, {min:1, max:100}) : null,
-      shared ? validateNumber("Unowned share rent rate (%)", rentRatePct, {min:0, max:100}) : null,
-    ].filter(Boolean);
-
-    if (errs.length) {
-      el("error").textContent = errs[0];
-      setSnapshotsToDash();
-      syncExplainerLinks();
-      el("scheduleBody").innerHTML = "";
-      return;
-    }
-
-    const ownedValue = price * (ownPct / 100);
-    const depositAmt = ownedValue * (downPct / 100);
-    const principal = ownedValue - depositAmt;
-
-    if (principal < 0) {
-      el("error").textContent = "Deposit cannot exceed the owned value of the property.";
-      setSnapshotsToDash();
-      syncExplainerLinks();
-      el("scheduleBody").innerHTML = "";
-      return;
-    }
-
-    const rentMonthly = shared ? calcSharedRentMonthly(price, ownPct, rentRatePct) : 0;
-    const ppy = periodsPerYear(frequency);
-    const rentPerPeriod = rentMonthly * 12 / ppy;
-
-    const { payment, schedule, nPeriods } = buildSchedule({
-      principal,
-      annualRatePct: rate,
-      years,
-      frequency,
-      type,
-      offsetBalance,
-    });
-
-    // Snapshots: show split at 13th and 25th repayment period (for the chosen frequency)
-    const p13 = schedule[12];
-    const p25 = schedule[24];
-
-    if (p13) {
-      el("p13_interest").textContent = fmtGBP(p13.interest);
-      el("p13_capital").textContent  = fmtGBP(p13.principalPaid);
-    } else {
-      el("p13_interest").textContent = "—";
-      el("p13_capital").textContent  = "—";
-    }
-
-    if (p25) {
-      el("p25_interest").textContent = fmtGBP(p25.interest);
-      el("p25_capital").textContent  = fmtGBP(p25.principalPaid);
-    } else {
-      el("p25_interest").textContent = "—";
-      el("p25_capital").textContent  = "—";
-    }
-
-    const totalOutpay = payment + rentPerPeriod;
-
-    el("mortgagePayment").textContent = fmtGBP(payment);
-
-    // Helpful indicators to show the offset effect (payment may stay the same, but interest drops and payoff can be faster)
-    el("interestThisPeriod").textContent = fmtGBP(schedule[0]?.interest ?? 0);
-    const payoffPeriods = schedule.length;
-    const payoffYears = payoffPeriods / ppy;
-    el("payoffTime").textContent = payoffPeriods ? `${payoffPeriods} periods (~${payoffYears.toFixed(1)}y)` : "—";
-
-    el("rentMonthly").textContent = fmtGBP(rentMonthly);
-    el("totalOutpay").textContent = fmtGBP(totalOutpay);
-    el("principal").textContent = fmtGBP(principal);
-    el("deposit").textContent = fmtGBP(depositAmt);
-
-    el("p13_rent").textContent = fmtGBP(rentPerPeriod);
-    el("p13_total").textContent = fmtGBP(totalOutpay);
-    el("p25_rent").textContent = fmtGBP(rentPerPeriod);
-    el("p25_total").textContent = fmtGBP(totalOutpay);
-
-    el("schemeNote").textContent = shared
-      ? `Scheme: Shared ownership (${ownPct}% owned). Total outpay = mortgage (owned share) + rent (unowned share at ${rentRatePct}%). Offset balance reduces interest only.`
-      : `Scheme: Private property (100% owned). Offset balance reduces interest only.`;
-
-    renderSchedule(schedule);
-    syncExplainerLinks();
-  }
-
-  function reset() {
-    el("price").value = 400000;
-    el("downPct").value = 10;
-    el("rate").value = 4.5;
-    el("years").value = 30;
-    el("type").value = "repayment";
-    el("frequency").value = "monthly";
-    el("offsetBalance").value = 0;
-
-    el("sharedToggle").checked = false;
-    el("ownershipBlock").style.display = "none";
-    el("ownPct").value = 50;
-    el("rentRatePct").value = 2.7;
-
-    el("mortgagePayment").textContent = "—";
-    el("interestThisPeriod").textContent = "—";
-    el("payoffTime").textContent = "—";
-    el("rentMonthly").textContent = "—";
-    el("totalOutpay").textContent = "—";
-    el("principal").textContent = "—";
-    el("deposit").textContent = "—";
-    el("scheduleBody").innerHTML = "";
-    el("schemeNote").textContent = "";
-    el("error").textContent = "";
-    setSnapshotsToDash();
-    syncExplainerLinks();
-
-    const u = new URL(window.location.href);
-    u.searchParams.delete("state");
-    window.history.replaceState({}, "", u.pathname + u.search);
-  }
-
-  function attachLiveSync() {
-    const ids = ["price","downPct","rate","years","type","frequency","offsetBalance","sharedToggle","ownPct","rentRatePct"];
-    ids.forEach((id) => {
-      const node = el(id);
-      const evt = (node.tagName === "SELECT" || node.type === "checkbox") ? "change" : "input";
-      node.addEventListener(evt, () => {
-        if (id === "sharedToggle") {
-          el("ownershipBlock").style.display = node.checked ? "block" : "none";
-          syncExplainerLinks();
-        }
-        calc();
-      });
-    });
-  }
-
-  el("calcBtn").addEventListener("click", (e) => { e.preventDefault(); calc(); });
-  el("resetBtn").addEventListener("click", (e) => { e.preventDefault(); reset(); });
-
-  el("toggleSchedule").addEventListener("click", (e) => {
-    e.preventDefault();
-    const wrap = el("scheduleWrap");
-    const open = wrap.style.display !== "none";
-    wrap.style.display = open ? "none" : "block";
-    el("toggleSchedule").textContent = open ? "Show schedule ↓" : "Hide schedule ↑";
-  });
-
-  el("toggleOffsetExplainer").addEventListener("click", (e) => {
-    e.preventDefault();
-    const box = el("offsetExplainer");
-    const open = box.style.display !== "none";
-    box.style.display = open ? "none" : "block";
-    el("toggleOffsetExplainer").textContent = open ? "Show explanation ↓" : "Hide explanation ↑";
-    if (!open) {
-      box.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  });
-
-  // Restore state from URL (if returning from explainer)
-  (function initFromUrlState() {
-    const s = getQueryParam("state");
-    if (!s) return;
-    try {
-      const obj = JSON.parse(b64urlDecode(s));
-      applyStateToInputs(obj);
-      const u = new URL(window.location.href);
-      u.searchParams.delete("state");
-      window.history.replaceState({}, "", u.pathname + u.search);
-    } catch (e) {}
-  })();
-
-  attachLiveSync();
-  calc();
-</script>
 </body>
 </html>

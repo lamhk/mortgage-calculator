@@ -2,9 +2,18 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://mortgage-cal.uk/</loc></url>
   <url><loc>https://mortgage-cal.uk/index.html</loc></url>
+
+  <url><loc>https://mortgage-cal.uk/calculators/</loc></url>
+  <url><loc>https://mortgage-cal.uk/calculators/index.html</loc></url>
+  <url><loc>https://mortgage-cal.uk/calculators/mortgage-payment.html</loc></url>
+  <url><loc>https://mortgage-cal.uk/calculators/stamp-duty.html</loc></url>
+  <url><loc>https://mortgage-cal.uk/calculators/rent-vs-buy-london.html</loc></url>
+
   <url><loc>https://mortgage-cal.uk/shared-ownership-explainer.html</loc></url>
   <url><loc>https://mortgage-cal.uk/articles.html</loc></url>
   <url><loc>https://mortgage-cal.uk/news.html</loc></url>
+  <url><loc>https://mortgage-cal.uk/privacy.html</loc></url>
+
   <url><loc>https://mortgage-cal.uk/articles/first-time-buyer-guide.html</loc></url>
   <url><loc>https://mortgage-cal.uk/articles/first-time-buyer-guide.zh-hant.html</loc></url>
   <url><loc>https://mortgage-cal.uk/articles/fixed-vs-tracker.html</loc></url>
