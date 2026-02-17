@@ -178,6 +178,25 @@
       <p class="note" id="schemeNote"></p>
 
       <details style="margin-top:10px;" class="item">
+        <summary style="cursor:pointer;font-weight:800;">Show yearly summary</summary>
+        <div style="overflow:auto; margin-top:10px;">
+          <table style="width:100%; border-collapse: collapse; font-size:12px;">
+            <thead>
+              <tr style="text-align:left; border-bottom:1px solid var(--line);">
+                <th style="padding:8px 6px;">Year</th>
+                <th style="padding:8px 6px;">Start balance</th>
+                <th style="padding:8px 6px;">Interest paid</th>
+                <th style="padding:8px 6px;">Principal paid</th>
+                <th style="padding:8px 6px;">End balance</th>
+              </tr>
+            </thead>
+            <tbody id="yearlyBody"></tbody>
+          </table>
+        </div>
+        <p class="note" style="margin-top:10px;">Year boundaries follow your selected payment frequency (e.g. 12 payments per year for monthly).</p>
+      </details>
+
+      <details style="margin-top:10px;" class="item">
         <summary style="cursor:pointer;font-weight:800;">Show amortization schedule (first 24 periods)</summary>
         <div style="overflow:auto; margin-top:10px;">
           <table style="width:100%; border-collapse: collapse; font-size:12px;">
@@ -305,6 +324,42 @@
     tbody.innerHTML = rows;
   }
 
+  function renderYearlySummary(schedule, { principal, ppy }) {
+    const tbody = el("yearlyBody");
+    if (!tbody) return;
+
+    const rows = [];
+    const n = schedule.length;
+    const nYears = Math.ceil(n / ppy);
+
+    for (let y = 1; y <= nYears; y++) {
+      const startIdx = (y - 1) * ppy;
+      const endIdx = Math.min(y * ppy - 1, n - 1);
+      if (startIdx >= n) break;
+
+      const startBalance = (startIdx === 0) ? principal : (schedule[startIdx - 1]?.balance ?? principal);
+      const endBalance = schedule[endIdx]?.balance ?? 0;
+
+      let interestPaid = 0;
+      let principalPaid = 0;
+      for (let i = startIdx; i <= endIdx; i++) {
+        interestPaid += schedule[i]?.interest ?? 0;
+        principalPaid += schedule[i]?.principalPaid ?? 0;
+      }
+
+      rows.push(`
+        <tr style="border-bottom:1px solid var(--line);">
+          <td style="padding:8px 6px;">${y}</td>
+          <td style="padding:8px 6px;">${fmtGBP(startBalance)}</td>
+          <td style="padding:8px 6px;">${fmtGBP(interestPaid)}</td>
+          <td style="padding:8px 6px;">${fmtGBP(principalPaid)}</td>
+          <td style="padding:8px 6px;">${fmtGBP(endBalance)}</td>
+        </tr>`);
+    }
+
+    tbody.innerHTML = rows.join("");
+  }
+
   function calc() {
     el("error").textContent = "";
 
@@ -333,6 +388,8 @@
     if (errs.length) {
       el("error").textContent = errs[0];
       el("scheduleBody").innerHTML = "";
+      const yb = el("yearlyBody");
+      if (yb) yb.innerHTML = "";
       syncExplainerLinks();
       return;
     }
@@ -344,6 +401,8 @@
     if (principal < 0) {
       el("error").textContent = "Deposit cannot exceed the owned value of the property.";
       el("scheduleBody").innerHTML = "";
+      const yb = el("yearlyBody");
+      if (yb) yb.innerHTML = "";
       syncExplainerLinks();
       return;
     }
@@ -379,6 +438,7 @@
       ? `Scheme: Shared ownership (${ownPct}% owned). Total outpay = mortgage (owned share) + rent (unowned share at ${rentRatePct}%). Offset reduces interest only.`
       : `Scheme: Private property (100% owned). Offset reduces interest only.`;
 
+    renderYearlySummary(schedule, { principal, ppy });
     renderSchedule(schedule);
     syncExplainerLinks();
     updateStepper();
@@ -400,6 +460,8 @@
 
     ["mortgagePayment","interestThisPeriod","payoffTime","rentMonthly","totalOutpay","principal","deposit"].forEach((id) => el(id).textContent = "—");
     el("scheduleBody").innerHTML = "";
+    const yb = el("yearlyBody");
+    if (yb) yb.innerHTML = "";
     el("schemeNote").textContent = "";
     el("error").textContent = "";
     syncExplainerLinks();
