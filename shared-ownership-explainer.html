@@ -23,7 +23,7 @@
   <header>
     <div class="pill">Shared Ownership explainer</div>
     <h1>Why increasing ownership % changes your monthly cost</h1>
-    <p><a id="backLink" href="./index.html">← Back to the calculator</a></p>
+    <p><a id="backLink" href="./mortgage.html">← Back to the mortgage calculator</a> · <a href="./index.html">Home</a></p>
   </header>
 
   <main>
@@ -69,7 +69,7 @@
         <li>Rent may increase over time depending on scheme rules.</li>
       </ul>
 
-      <p><a id="backLinkBottom" href="./index.html">← Back to the calculator</a></p>
+      <p><a id="backLinkBottom" href="./mortgage.html">← Back to the mortgage calculator</a></p>
     </div>
   </main>
 
@@ -86,7 +86,7 @@
 
   // Preserve calculator state in Back links
   const state = getQueryParam("state");
-  const backHref = state ? setQueryParam("./index.html", "state", state) : "./index.html";
+  const backHref = state ? setQueryParam("./mortgage.html", "state", state) : "./mortgage.html";
   document.getElementById("backLink").setAttribute("href", backHref);
   document.getElementById("backLinkBottom").setAttribute("href", backHref);
 </script>

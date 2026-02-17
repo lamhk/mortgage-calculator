@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>UK Stamp Duty (SDLT) Calculator (No Cookies) | mortgage-cal.uk</title>
+  <link rel="canonical" href="https://mortgage-cal.uk/stamp-duty.html" />
+  <meta name="description" content="UK SDLT (Stamp Duty) calculator with clear assumptions and examples. No cookies." />
+  <link rel="stylesheet" href="./src/site.css" />
+</head>
+<body>
+  <header class="header">
+    <h1 class="h1">UK Stamp Duty (SDLT) calculator</h1>
+    <p class="sub">Banded SDLT estimate. Mobile‑first. No cookies.</p>
+  </header>
+
+  <nav class="nav" aria-label="Site sections">
+    <div class="tabs">
+      <a class="tab" href="./index.html">Home</a>
+      <a class="tab" href="./mortgage.html">Mortgage calculator</a>
+      <a class="tab active" href="./stamp-duty.html" aria-current="page">Stamp duty</a>
+      <a class="tab" href="./articles.html">Articles</a>
+    </div>
+  </nav>
+
+  <main class="wrap grid">
+    <section class="card">
+      <div class="title">Inputs</div>
+
+      <div class="row">
+        <div class="field">
+          <label for="price">Property price (£)</label>
+          <input id="price" type="number" min="0" step="1000" value="400000" inputmode="decimal" />
+        </div>
+        <div class="field">
+          <label for="buyerType">Buyer type</label>
+          <select id="buyerType">
+            <option value="standard" selected>Standard purchase</option>
+            <option value="ftb">First‑time buyer (if eligible)</option>
+            <option value="additional">Additional property / buy‑to‑let (3% surcharge)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="region">Nation</label>
+          <select id="region">
+            <option value="eng" selected>England / N. Ireland (SDLT)</option>
+            <option value="todo" disabled>Scotland (LBTT) — coming</option>
+            <option value="todo" disabled>Wales (LTT) — coming</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="btns">
+        <button id="calcBtn" type="button">Calculate</button>
+        <button id="resetBtn" class="secondary" type="button">Reset</button>
+      </div>
+
+      <div id="error" class="err" role="alert" aria-live="polite"></div>
+
+      <p class="note">
+        <strong>Important:</strong> SDLT rules change. This page ships with a “rates table” in the source code so it’s quick to update.
+        If you tell me the exact bands you want (or a GOV.UK link), I’ll update them and add an “updated on” badge.
+      </p>
+    </section>
+
+    <section class="card sticky">
+      <div class="title">Results</div>
+      <div class="kpis">
+        <div class="metric"><div class="k">Estimated SDLT</div><div class="v" id="sdlt">—</div></div>
+        <div class="metric"><div class="k">Effective rate</div><div class="v" id="eff">—</div></div>
+      </div>
+
+      <div class="hr"></div>
+      <div class="title">Breakdown</div>
+      <div id="breakdown" class="note"></div>
+
+      <div class="hr"></div>
+      <p class="note">
+        Disclaimer: general information only; not tax advice. Eligibility rules (e.g. first‑time buyer) are more detailed than a dropdown.
+      </p>
+    </section>
+
+    <section class="card" style="grid-column:1 / -1;">
+      <div class="title">What is stamp duty?</div>
+      <p class="note" style="font-size:14px;">
+        Stamp Duty Land Tax (SDLT) is a tax you may pay when buying property in England and Northern Ireland.
+        It’s banded: different slices of the price are taxed at different rates.
+      </p>
+      <div class="list" style="margin-top:10px;">
+        <div class="item"><h3>Examples</h3><p>We’ll add worked examples for common London price points (FTB vs standard vs additional).</p></div>
+        <div class="item"><h3>FAQs</h3><p>We’ll add FAQs (gifted deposit, replacing main residence, married couples, etc.).</p></div>
+      </div>
+    </section>
+  </main>
+
+<script type="module">
+  const el = (id) => document.getElementById(id);
+  const fmtGBP = (x) => new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP',maximumFractionDigits:0}).format(x);
+
+  // Rates table (England/NI). Update these bands when rules change.
+  // Each band is [upTo, rate] where upTo is inclusive upper bound for the band slice.
+  // NOTE: These are placeholders; please confirm the bands you want live.
+  const RATES_STANDARD = [
+    [250000, 0.00],
+    [925000, 0.05],
+    [1500000, 0.10],
+    [Infinity, 0.12],
+  ];
+
+  const RATES_FTB = [
+    [425000, 0.00],
+    [625000, 0.05],
+    [Infinity, null], // not eligible above cap (simplified)
+  ];
+
+  const ADDITIONAL_SURCHARGE = 0.03;
+
+  function calcBandedTax(price, bands) {
+    let prev = 0;
+    let tax = 0;
+    const parts = [];
+
+    for (const [upTo, rate] of bands) {
+      if (rate == null) {
+        return { tax: NaN, parts: [{label:'Not eligible for selected relief at this price (simplified rule).', slice: 0, rate: 0, tax: NaN}] };
+      }
+      const slice = Math.max(0, Math.min(price, upTo) - prev);
+      if (slice > 0) {
+        const t = slice * rate;
+        tax += t;
+        parts.push({ upTo, slice, rate, tax: t });
+      }
+      prev = upTo;
+      if (price <= upTo) break;
+    }
+
+    return { tax, parts };
+  }
+
+  function calc() {
+    el('error').textContent = '';
+    const price = Number(el('price').value);
+    if (!Number.isFinite(price) || price < 0) {
+      el('error').textContent = 'Enter a valid property price.';
+      return;
+    }
+
+    const buyerType = el('buyerType').value;
+
+    let base;
+    if (buyerType === 'ftb') base = calcBandedTax(price, RATES_FTB);
+    else base = calcBandedTax(price, RATES_STANDARD);
+
+    if (!Number.isFinite(base.tax)) {
+      el('sdlt').textContent = '—';
+      el('eff').textContent = '—';
+      el('breakdown').innerHTML = 'This selection needs a more detailed eligibility model. Tell me the exact SDLT rules you want and I’ll implement them.';
+      return;
+    }
+
+    let surcharge = 0;
+    if (buyerType === 'additional') surcharge = price * ADDITIONAL_SURCHARGE;
+
+    const total = base.tax + surcharge;
+    el('sdlt').textContent = fmtGBP(total);
+    el('eff').textContent = (price ? (total / price * 100).toFixed(2) : 0) + '%';
+
+    const lines = [];
+    for (const p of base.parts) {
+      lines.push(`${fmtGBP(p.slice)} at ${(p.rate*100).toFixed(1)}% = ${fmtGBP(p.tax)}`);
+    }
+    if (surcharge > 0) lines.push(`Additional property surcharge: ${fmtGBP(price)} × 3% = ${fmtGBP(surcharge)}`);
+
+    el('breakdown').innerHTML = '<ul style="margin:0;padding-left:18px;">' + lines.map(x=>`<li>${x}</li>`).join('') + '</ul>';
+  }
+
+  function reset() {
+    el('price').value = 400000;
+    el('buyerType').value = 'standard';
+    el('sdlt').textContent = '—';
+    el('eff').textContent = '—';
+    el('breakdown').innerHTML = '';
+    el('error').textContent = '';
+  }
+
+  el('calcBtn').addEventListener('click', calc);
+  el('resetBtn').addEventListener('click', reset);
+
+  calc();
+</script>
+</body>
+</html>
