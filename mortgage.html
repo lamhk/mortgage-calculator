@@ -39,7 +39,7 @@
     <div class="tabs">
       <a class="tab" href="./index.html">Home</a>
       <a class="tab active" href="./mortgage.html" aria-current="page">Mortgage calculator</a>
-      <a class="tab" href="./shared-ownership-explainer.html">Shared ownership explained</a>
+      <a class="tab" href="./articles/shared-ownership-explainer.html">Shared ownership explained</a>
       <a class="tab" href="./news.html">News</a>
       <a class="tab" href="./articles.html">Articles <span style="font-size:11px;color:var(--muted);">EN/繁</span></a>
     </div>
@@ -149,7 +149,7 @@
               </div>
             </div>
             <p class="note">Rent rate is an <strong>annual</strong> % charged on the <strong>unowned</strong> share.</p>
-            <p class="note"><a id="explainerLinkTop" href="./shared-ownership-explainer.html">Learn why ownership % affects monthly cost →</a></p>
+            <p class="note"><a id="explainerLinkTop" href="./articles/shared-ownership-explainer.html">Learn why ownership % affects monthly cost →</a></p>
           </div>
         </details>
       </div>
@@ -197,7 +197,7 @@
         <p class="note" style="margin-top:10px;">Offset balance assumed constant.</p>
       </details>
 
-      <p class="note" style="margin-top:10px;"><a id="explainerLinkBottom" href="./shared-ownership-explainer.html">Why ownership % changes monthly costs →</a></p>
+      <p class="note" style="margin-top:10px;"><a id="explainerLinkBottom" href="./articles/shared-ownership-explainer.html">Why ownership % changes monthly costs →</a></p>
 
       <p class="note" style="margin-top:10px;">
         Disclaimer (2026): General information only; not financial, legal, or tax advice.
@@ -284,7 +284,7 @@
   function syncExplainerLinks() {
     const state = getStateFromInputs();
     const encoded = b64urlEncode(JSON.stringify(state));
-    const href = setQueryParam("./shared-ownership-explainer.html", "state", encoded);
+    const href = setQueryParam("./articles/shared-ownership-explainer.html", "state", encoded);
     el("explainerLinkTop")?.setAttribute("href", href);
     el("explainerLinkBottom")?.setAttribute("href", href);
   }

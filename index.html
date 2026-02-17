@@ -5,19 +5,23 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>UK Mortgage & Finance Advice Centre (No Cookies) | mortgage-cal.uk</title>
   <link rel="canonical" href="https://mortgage-cal.uk/" />
-  <meta name="description" content="Mobile-first UK mortgage and finance advice centre: mortgage calculators, property tax tools, salary/net pay calculators, and side-by-side comparisons. No cookies." />
+  <meta name="description" content="Mobile-first UK mortgage and finance advice centre: quick mortgage estimate, deeper calculators, and plain-English explainers. No cookies." />
   <link rel="stylesheet" href="./src/site.css" />
+  <style>
+    .mini{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    @media(max-width:900px){.mini{grid-template-columns:1fr}}
+  </style>
 </head>
 <body>
   <header class="header">
     <div class="hero">
       <div>
-        <h1 class="h1">Mortgage-Cal: UK Finance & Mortgage Advice Centre</h1>
-        <p class="sub">Mobile-first calculators + plain-English explainers. No cookies (we only use URL parameters to carry inputs between pages).</p>
+        <h1 class="h1">Mortgage‑Cal: UK Finance & Mortgage Advice Centre</h1>
+        <p class="sub">Mobile‑first calculators + plain‑English explainers. No cookies (we use URL parameters for shareable scenarios).</p>
       </div>
       <div class="cta">
         <a class="tab active" href="./index.html" aria-current="page">Home</a>
-        <a class="tab" href="./mortgage.html">Mortgage calculator</a>
+        <a class="tab" href="./mortgage.html">Full mortgage calculator</a>
         <a class="tab" href="./articles.html">Articles <span class="badge">New</span></a>
       </div>
     </div>
@@ -26,59 +30,80 @@
   <nav class="nav" aria-label="Site sections">
     <div class="tabs">
       <a class="tab" href="./mortgage.html">Mortgage</a>
-      <a class="tab" href="./shared-ownership-explainer.html">Shared ownership</a>
+      <a class="tab" href="./calculators/">Calculators</a>
       <a class="tab" href="./news.html">News</a>
       <a class="tab" href="./articles.html">Articles <span style="font-size:11px;color:var(--muted);">EN/繁</span></a>
     </div>
   </nav>
 
   <main class="wrap">
+    <!-- Simple mortgage calculator (top-of-home) -->
     <section class="card">
-      <div class="title">Start here</div>
-      <div class="list" role="list">
-        <div class="item" role="listitem">
-          <h3><a href="./mortgage.html">Mortgage payment calculator</a></h3>
-          <p>Repayment or interest-only, weekly/fortnightly/monthly, offset balance, and optional shared ownership rent.</p>
+      <div class="title">Quick mortgage estimate</div>
+      <p class="note" style="margin-top:-2px;">A simple monthly repayment estimate (repayment mortgage, monthly). For offset/shared ownership/weekly payments and schedules, use the full calculator.</p>
+
+      <div class="mini" style="margin-top:10px;">
+        <div class="field">
+          <label for="q_price">Property price (£)</label>
+          <input id="q_price" type="number" min="0" step="1000" value="400000" inputmode="decimal" />
         </div>
-        <div class="item" role="listitem">
-          <h3><a href="./shared-ownership-explainer.html">Shared ownership explained</a></h3>
-          <p>Why ownership % changes monthly cost, what rent is charged on, and the traps to check in the lease.</p>
+        <div class="field">
+          <label for="q_depositPct">Deposit (%)</label>
+          <input id="q_depositPct" type="number" min="0" max="100" step="0.1" value="10" inputmode="decimal" />
+        </div>
+        <div class="field">
+          <label for="q_rate">Interest rate (%/yr)</label>
+          <input id="q_rate" type="number" min="0" step="0.01" value="4.5" inputmode="decimal" />
+        </div>
+        <div class="field">
+          <label for="q_years">Term (years)</label>
+          <input id="q_years" type="number" min="1" step="1" value="30" inputmode="numeric" />
         </div>
       </div>
-      <div class="hr"></div>
-      <p class="note"><strong>Promise:</strong> no cookie banners. If we add analytics later, it will be cookieless (or opt-in).</p>
+
+      <div class="kpis" style="margin-top:10px;">
+        <div class="metric"><div class="k">Estimated monthly payment</div><div class="v" id="q_payment">—</div></div>
+        <div class="metric"><div class="k">Loan amount</div><div class="v" id="q_loan">—</div></div>
+      </div>
+
+      <div class="btns" style="margin-top:10px;">
+        <a class="tab" id="q_fullLink" href="./mortgage.html">Open full calculator →</a>
+        <a class="tab" href="./calculators/stamp-duty.html">Stamp duty (SDLT) →</a>
+      </div>
+
+      <p class="note" style="margin-top:10px;"><strong>Promise:</strong> no cookie banners.</p>
     </section>
 
     <section class="card" style="margin-top:14px;">
-      <div class="title">High-opportunity UK calculators (building now)</div>
+      <div class="title">High‑opportunity UK calculators</div>
       <div class="list" role="list">
         <div class="item" role="listitem">
           <h3><a href="./calculators/stamp-duty.html">UK Stamp Duty (SDLT) calculator</a> <span class="pill">Live</span></h3>
-          <p>Banded SDLT breakdown (England/N. Ireland residential), first-time buyer relief (simplified), and optional surcharges. No cookies.</p>
+          <p>Banded SDLT breakdown (England/N. Ireland residential), first‑time buyer relief (simplified), and optional surcharges. No cookies.</p>
         </div>
         <div class="item" role="listitem">
-          <h3><a href="./calculators/buy-to-let-yield.html">Buy-to-let yield + after-tax cashflow</a> <span class="pill">Live</span></h3>
-          <p>Gross yield, net yield, and simplified Section 24 after-tax cashflow. Transparent assumptions + disclaimer.</p>
+          <h3><a href="./calculators/rent-vs-buy-london.html">Rent vs buy (London) comparison</a> <span class="pill">Live</span></h3>
+          <p>Monthly cashflow + horizon totals, plus an advanced view with SDLT and selling costs. Built for mobile.</p>
         </div>
         <div class="item" role="listitem">
           <h3><a href="./calculators/take-home-pay.html">UK take‑home pay (PAYE) calculator</a> <span class="pill">Live</span></h3>
           <p>Income tax + employee NI + Student Loan plans (simplified) with salary sacrifice pension option.</p>
         </div>
         <div class="item" role="listitem">
-          <h3><a href="./calculators/rent-vs-buy-london.html">Rent vs buy (London) comparison</a> <span class="pill">Live</span></h3>
-          <p>Monthly cashflow + horizon totals, plus advanced mode with SDLT and selling costs. Built for mobile.</p>
+          <h3><a href="./calculators/buy-to-let-yield.html">Buy‑to‑let yield + after‑tax cashflow</a> <span class="pill">Live</span></h3>
+          <p>Gross yield, net yield, and simplified Section 24 after‑tax cashflow. Transparent assumptions + disclaimer.</p>
         </div>
       </div>
-      <p class="note" style="margin-top:10px;">Want a specific calculator prioritised first (SDLT vs net pay vs rent/buy)? Tell me and I'll build in that order.</p>
     </section>
 
     <section class="card" style="margin-top:14px;">
       <div class="title">Popular guides</div>
       <p class="note" style="margin:0;">
-        <a href="./articles/first-time-buyer-guide.html">First-time buyer steps</a> ·
+        <a href="./articles/first-time-buyer-guide.html">First‑time buyer steps</a> ·
         <a href="./articles/ltv-vs-rates.html">LTV vs rates</a> ·
         <a href="./articles/fixed-vs-tracker.html">Fixed vs tracker</a> ·
         <a href="./articles/real-cost-of-buying-uk.html">Real cost of buying</a> ·
+        <a href="./articles/shared-ownership-explainer.html">Shared ownership explained</a> ·
         <a href="./articles.html">All articles →</a>
       </p>
     </section>
@@ -87,9 +112,66 @@
       <p class="note">
         Disclaimer (2026): This site is for general information only and does not constitute financial, legal, or tax advice. Figures are estimates; always verify with your lender / housing association and a qualified adviser.
         <br><br>
-        © 2026 Mortgage-Cal. All rights reserved.
+        © 2026 Mortgage‑Cal. All rights reserved.
       </p>
     </footer>
   </main>
+
+<script type="module">
+  import { repaymentPayment } from "./src/mortgage.js";
+
+  const el = (id) => document.getElementById(id);
+  const fmtGBP0 = (x) => {
+    if (!isFinite(x)) return '—';
+    return new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP',maximumFractionDigits:0}).format(x);
+  };
+
+  function calc(){
+    const price = Number(el('q_price').value);
+    const depPct = Number(el('q_depositPct').value);
+    const rate = Number(el('q_rate').value);
+    const years = Number(el('q_years').value);
+
+    if (![price,depPct,rate,years].every(Number.isFinite) || price < 0 || depPct < 0 || depPct > 100 || years <= 0){
+      el('q_payment').textContent = '—';
+      el('q_loan').textContent = '—';
+      return;
+    }
+
+    const deposit = price * (depPct/100);
+    const principal = Math.max(0, price - deposit);
+
+    const r = (rate/100)/12;
+    const n = Math.round(years*12);
+    const pmt = repaymentPayment(principal, r, n);
+
+    el('q_payment').textContent = fmtGBP0(pmt);
+    el('q_loan').textContent = fmtGBP0(principal);
+
+    // Link into full calculator with state (no cookies)
+    const state = {
+      price: String(price),
+      downPct: String(depPct),
+      rate: String(rate),
+      years: String(years),
+      type: 'repayment',
+      frequency: 'monthly',
+      offsetBalance: '0',
+      shared: 0,
+      ownPct: '50',
+      rentRatePct: '2.7'
+    };
+
+    const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(state))))
+      .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+
+    const u = new URL('./mortgage.html', window.location.origin);
+    u.searchParams.set('state', encoded);
+    el('q_fullLink').setAttribute('href', u.pathname + u.search);
+  }
+
+  ['q_price','q_depositPct','q_rate','q_years'].forEach((id)=>el(id).addEventListener('input', calc));
+  calc();
+</script>
 </body>
 </html>

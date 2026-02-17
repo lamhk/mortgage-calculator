@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Shared Ownership Explained (UK) — Why % Changes Monthly Cost | mortgage-cal.uk</title>
+  <link rel="canonical" href="https://mortgage-cal.uk/articles/shared-ownership-explainer.html" />
+  <meta name="description" content="Plain-English UK shared ownership explainer: why ownership % changes monthly cost (mortgage + rent), pros/cons, and common extra costs. No cookies." />
+  <link rel="stylesheet" href="../src/site.css" />
+  <style>
+    h2{margin:18px 0 8px;font-size:16px}
+    p,li{color:var(--muted);line-height:1.55;font-size:14px}
+    .pill{display:inline-block;padding:4px 8px;border-radius:999px;border:1px solid var(--line);background:#0e1730;font-size:12px;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="pill">Article · Shared ownership</div>
+    <h1 class="h1">Why increasing shared ownership % can change your monthly cost</h1>
+    <p class="sub">The intuition: you’re often paying <strong>mortgage + rent</strong>. This is information only (not advice). No cookies.</p>
+  </header>
+
+  <nav class="nav" aria-label="Site sections">
+    <div class="tabs">
+      <a class="tab" href="../index.html">Home</a>
+      <a class="tab" href="../mortgage.html">Mortgage calculator</a>
+      <a class="tab active" href="../articles.html" aria-current="page">Articles</a>
+      <a class="tab" href="../news.html">News</a>
+    </div>
+  </nav>
+
+  <main class="wrap">
+    <section class="card">
+      <div class="title">The simple idea</div>
+      <p>In shared ownership, you usually pay two things each month:</p>
+      <ul style="margin:8px 0 0 18px;">
+        <li><strong>Mortgage payment</strong> on the share you own (repayment or interest‑only).</li>
+        <li><strong>Rent</strong> on the share you do not own (often “interest‑like”).</li>
+      </ul>
+      <p style="margin-top:10px;">So your monthly cost is often <strong>mortgage + rent</strong>, not just mortgage.</p>
+      <p class="note" style="margin-top:10px;">Tip: use the calculator with shared ownership turned on to see mortgage+rent together.</p>
+      <div class="btns" style="margin-top:10px;">
+        <a class="tab" id="backToCalc" href="../mortgage.html">Open mortgage calculator →</a>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:14px;">
+      <div class="title">Why rent feels like “interest‑only”</div>
+      <p>
+        With a repayment mortgage, part of each payment reduces what you owe (capital repayment), so you build equity over time.
+        Rent on the unowned share is different: it’s a fee for using the landlord’s share, so it usually does not reduce a loan balance in your name.
+      </p>
+    </section>
+
+    <section class="card" style="margin-top:14px;">
+      <div class="title">Pros and cons of higher vs lower ownership</div>
+      <h2>Higher ownership</h2>
+      <ul style="margin:8px 0 0 18px;">
+        <li><strong>Pros:</strong> Less rent exposure (smaller unowned share).</li>
+        <li><strong>Pros:</strong> More of your outgo can build equity (if repayment mortgage).</li>
+        <li><strong>Cons:</strong> Larger mortgage needed; affordability may be tighter.</li>
+      </ul>
+
+      <h2 style="margin-top:16px;">Lower ownership</h2>
+      <ul style="margin:8px 0 0 18px;">
+        <li><strong>Pros:</strong> Smaller mortgage needed upfront; may help affordability.</li>
+        <li><strong>Cons:</strong> Higher rent exposure and rent does not reduce your mortgage balance.</li>
+      </ul>
+    </section>
+
+    <section class="card" style="margin-top:14px;">
+      <div class="title">Common “extra” costs to remember</div>
+      <ul style="margin:8px 0 0 18px;">
+        <li>Service charge / maintenance</li>
+        <li>Buildings insurance (or contribution via service charge)</li>
+        <li>Staircasing fees / valuation costs</li>
+        <li>Rent review increases (often linked to inflation + a margin)</li>
+      </ul>
+    </section>
+
+    <section class="card" style="margin-top:14px;">
+      <div class="title">Disclaimer</div>
+      <ul style="margin:8px 0 0 18px;" class="note">
+        <li>This page is for general information only and does not constitute financial advice.</li>
+        <li>Shared ownership schemes vary. Always check your lease and housing association terms.</li>
+      </ul>
+    </section>
+
+    <footer class="wrap" style="padding:18px 16px 30px;">
+      <p class="note">© 2026 Mortgage‑Cal.</p>
+    </footer>
+  </main>
+
+<script>
+  // Carry calculator state back if present.
+  function getQueryParam(name){ return new URL(window.location.href).searchParams.get(name); }
+  function setQueryParam(url, key, value){
+    const u = new URL(url, window.location.origin);
+    if (value) u.searchParams.set(key, value);
+    return u.pathname + u.search;
+  }
+  const state = getQueryParam('state');
+  const href = state ? setQueryParam('../mortgage.html', 'state', state) : '../mortgage.html';
+  document.getElementById('backToCalc').setAttribute('href', href);
+</script>
+</body>
+</html>
