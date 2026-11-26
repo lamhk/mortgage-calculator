@@ -6,8 +6,8 @@
   <title>Internet BGP and ASN analysis</title>
   <meta name="description" content="An introduction to Internet routing analysis using CAIDA AS relationships and public BGP observations from RouteViews and RIPE RIS." />
   <meta name="theme-color" content="#0b1220" />
-  <link rel="canonical" href="https://mortgage-cal.uk/internet-bgp-asn/" />
-  <link rel="stylesheet" href="../src/site.css" />
+  <link rel="canonical" href="https://mortgage-cal.uk/internet-bgp-asn.html" />
+  <link rel="stylesheet" href="./src/site.css" />
 </head>
 <body>
   <header class="header">
@@ -18,12 +18,21 @@
         <p class="note">Last updated: <time datetime="2026-11-26">26 November 2026</time></p>
       </div>
       <nav class="cta" aria-label="Portal navigation">
-        <a class="tab" href="../index.html">Portal home</a>
+        <a class="tab" href="./index.html">Portal home</a>
       </nav>
     </div>
   </header>
 
   <main class="wrap">
+    <section class="card" aria-labelledby="planned">
+      <h2 class="title" id="planned">Coming soon</h2>
+      <p>Explore the pages planned for future routing analysis. These placeholders do not contain measurements.</p>
+      <ul>
+        <li><a href="./internet-bgp-asn/ASNxxx.html">ASNxxx.html</a> — example ASN profile (placeholder)</li>
+        <li><a href="./internet-bgp-asn/routing-trends.html">Routing trends</a> — planned comparisons across collectors and time periods</li>
+      </ul>
+    </section>
+
     <section class="card" aria-labelledby="overview">
       <h2 class="title" id="overview">Reading an Internet route</h2>
       <p>Border Gateway Protocol (BGP) is how independently managed networks exchange information about reachable blocks of IP addresses. An Autonomous System Number (ASN) identifies one of those networks. For a typical BGP route, the rightmost ASN in the AS path is the origin, while the earlier ASNs describe the route as seen by a collector peer.</p>
