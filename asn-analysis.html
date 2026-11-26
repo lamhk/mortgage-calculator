@@ -5,6 +5,61 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="robots" content="noindex" />
   <title>ASN Analysis</title>
+  <link rel="stylesheet" href="./src/site.css" />
+  <link rel="stylesheet" href="./src/asn-analysis.css" />
+  <script type="module" src="./src/asn-analysis.js"></script>
 </head>
-<body>Coming Soon</body>
+<body>
+  <header class="header">
+    <div class="hero">
+      <div><h1 class="h1">ASN Analysis</h1><p class="sub">Find the direct downstream customers of an upstream network.</p></div>
+      <nav class="tabs" aria-label="Portal navigation">
+        <a class="tab" href="./internet-bgp-asn.html">Internet BGP and ASN analysis</a>
+        <a class="tab" href="./index.html">Portal home</a>
+      </nav>
+    </div>
+  </header>
+  <main class="wrap enquiry">
+    <section class="card" aria-labelledby="lookup">
+      <h2 class="title" id="lookup">Customer ASN enquiry</h2>
+      <p id="snapshot-help">Download one complete <a href="https://data.caida.org/datasets/as-relationships/serial-1/">CAIDA serial-1 relationship snapshot</a> and extract its <code>.as-rel.txt.bz2</code> archive before choosing the <code>.as-rel.txt</code> file. For names and countries, choose the <a href="https://data.caida.org/datasets/as-organizations/">CAIDA AS Organizations</a> <code>.as-org2info.txt.gz</code> or extracted text file. Prefer snapshots from the same month.</p>
+      <p class="note">Review the <a href="https://www.caida.org/about/legal/aua/public_aua">CAIDA Acceptable Use Agreement</a>. Your files stay in this browser tab; this site does not host them or display live data.</p>
+      <noscript><p>Enable JavaScript to run the enquiry locally.</p></noscript>
+      <form id="enquiry-form" novalidate>
+        <div class="enquiry-fields">
+          <label>Relationships snapshot <span>(required)</span><input id="relationships" type="file" accept=".txt,.bz2" required aria-describedby="snapshot-help" /></label>
+          <label>AS Organizations snapshot <span>(required)</span><input id="organizations" type="file" accept=".txt,.gz" required aria-describedby="snapshot-help" /></label>
+          <label>Upstream ASN <span>(required)</span><input id="upstream" type="text" value="AS174" placeholder="AS174 or 174" maxlength="14" spellcheck="false" required /></label>
+          <label>Region<select id="region"><option value="all">All regions (including unknown)</option><option value="europe">Europe only</option></select></label>
+          <label>Homing<select id="homing"><option value="all">All</option><option value="single">Single-homed</option><option value="multi">Multi-homed</option></select></label>
+        </div>
+        <button class="tab" type="submit" id="lookup-button">Find customers</button>
+      </form>
+      <p id="enquiry-error" class="err" role="alert"></p>
+    </section>
+    <section class="card" aria-labelledby="results-title">
+      <h2 class="title" id="results-title">Results</h2>
+      <p id="enquiry-status" role="status">Choose both snapshots and run an enquiry.</p>
+      <p id="snapshot-dates" class="note" hidden></p>
+      <div id="result-pages" class="tabs enquiry-pages" role="group" aria-label="Result pages" hidden>
+        <button class="tab" type="button" id="previous-page">Previous</button>
+        <button class="tab" type="button" id="next-page">Next</button>
+        <span id="page-status" role="status"></span>
+      </div>
+      <div id="result-table" class="enquiry-scroll" role="region" aria-label="Customer results table" tabindex="0" hidden>
+        <table class="enquiry-table">
+          <caption id="customer-caption"></caption>
+          <thead><tr><th scope="col">Customer ASN</th><th scope="col">AS name</th><th scope="col">Organization</th><th scope="col">Registration country</th><th scope="col">Homing</th><th scope="col">Providers</th><th scope="col">Provider ASNs</th></tr></thead>
+          <tbody id="customers"></tbody>
+        </table>
+      </div>
+    </section>
+    <section class="card" aria-labelledby="methods">
+      <h2 class="title" id="methods">How to read the results</h2>
+      <p>We list direct provider-to-customer links only, not peers or the full customer cone. A customer is single-homed if the complete relationships snapshot shows one distinct provider ASN, and multi-homed if it shows two or more. Filters never change those counts. Inferred relationships do not prove contracts, physical links, or current connectivity.</p>
+      <p>Europe follows <a href="https://unstats.un.org/unsd/methodology/m49/">UN M49</a> (with Kosovo included for the XK code) and uses the CAIDA organization registration country, not the network’s physical footprint. Unknown countries appear under All regions and are excluded from Europe.</p>
+      <p class="note">Sources: <a href="https://www.caida.org/catalog/datasets/as-relationships/">CAIDA AS Relationships (serial-1)</a> and <a href="https://www.caida.org/catalog/datasets/as-organizations/">CAIDA AS Organizations</a>. Prefix-to-AS mappings do not establish provider relationships.</p>
+    </section>
+  </main>
+</body>
 </html>
