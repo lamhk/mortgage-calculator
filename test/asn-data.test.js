@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { parseAsn, parseRelationships, parseOrganizations, enquire, snapshotDate } from '../src/asn-data.js';
+import { parseAsn, parseRelationships, parseOrganizations, enquire, snapshotDate, readRelationships, readOrganizations } from '../src/asn-data.js';
 
 // Synthetic fixtures; no CAIDA data is distributed with the application.
 const graph = parseRelationships('# comment\n10|20|-1\n10|20|-1\n99|20|-1\n10|21|-1\n10|22|-1\n10|23|-1\n10|24|0\n25|10|-1\n20|26|-1\n10|10|-1');
@@ -51,4 +51,23 @@ test('snapshot labels and wrong-file diagnostics', () => {
   assert.equal(snapshotDate('renamed.txt'), null);
   assert.throws(() => parseRelationships('192.0.2.0\t24\t10'), /serial-1/);
   assert.throws(() => parseOrganizations('not an organization snapshot'), /AS Organizations|as-org2info/);
+});
+
+test('streams decode split UTF-8 characters, split records and final lines without newline', async () => {
+  function chunks(lines) {
+    const bytes = new TextEncoder().encode(lines.join(String.fromCharCode(10)));
+    return new ReadableStream({ start(controller) {
+      for (const byte of bytes) controller.enqueue(Uint8Array.of(byte));
+      controller.close();
+    } });
+  }
+  const streamedGraph = await readRelationships(chunks(['174|200|-1', '500|200|-1', '174|201|0']));
+  const streamedRegistry = await readOrganizations(chunks([
+    '# format: org_id|changed|org_name|country|source', 'D||Réseau|FR|TEST',
+    '# format: aut|changed|aut_name|org_id|opaque_id|source', '200||Réseau AS|D||TEST',
+  ]));
+  const { rows } = enquire(streamedGraph, streamedRegistry, 174, { region: 'europe' });
+  assert.equal(rows.length, 1);
+  assert.equal(rows[0].orgName, 'Réseau');
+  assert.deepEqual(rows[0].providers, [174, 500]);
 });

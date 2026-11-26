@@ -1,24 +1,18 @@
-import { parseRelationships, parseOrganizations, enquire, snapshotDate } from './asn-data.js';
+import { readRelationships, readOrganizations, enquire, snapshotDate } from './asn-data.js';
 
-async function readSnapshot(file) {
+function snapshotStream(file) {
   if (/\.bz2$/i.test(file.name)) throw new Error('Extract the .bz2 archive first (for example, with bunzip2) and choose the resulting .txt file.');
-  if (/\.gz$/i.test(file.name)) {
-    if (typeof DecompressionStream === 'undefined') throw new Error('This browser cannot open gzip files. Extract the .gz archive and choose its .txt file.');
-    try {
-      return await new Response(file.stream().pipeThrough(new DecompressionStream('gzip'))).text();
-    } catch {
-      throw new Error('Could not decompress the gzip snapshot. Check the file or try extracting it first.');
-    }
-  }
-  return file.text();
+  if (!/\.gz$/i.test(file.name)) return file.stream();
+  if (typeof DecompressionStream === 'undefined') throw new Error('This browser cannot open gzip files. Extract the .gz archive and choose its .txt file.');
+  return file.stream().pipeThrough(new DecompressionStream('gzip'));
 }
 
 let snapshot;
 self.onmessage = async ({ data }) => {
   try {
     if (!snapshot) {
-      const relationships = parseRelationships(await readSnapshot(data.relationships));
-      const organizations = parseOrganizations(await readSnapshot(data.organizations));
+      const relationships = await readRelationships(snapshotStream(data.relationships));
+      const organizations = await readOrganizations(snapshotStream(data.organizations));
       snapshot = { relationships, organizations };
     }
     const { relationships, organizations } = snapshot;
