@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Internet BGP and ASN analysis</title>
+  <meta name="description" content="An introduction to Internet routing analysis using CAIDA AS relationships and public BGP observations from RouteViews and RIPE RIS." />
+  <meta name="theme-color" content="#0b1220" />
+  <link rel="canonical" href="https://mortgage-cal.uk/internet-bgp-asn.html" />
+  <link rel="stylesheet" href="./src/site.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="hero">
+      <div>
+        <h1 class="h1">Internet BGP and ASN analysis</h1>
+        <p class="sub">How networks announce Internet routes and what public observations can tell us.</p>
+        <p class="note">Last updated: <time datetime="2026-11-26">26 November 2026</time></p>
+      </div>
+      <nav class="tabs" aria-label="Portal navigation">
+        <a class="tab" href="./index.html">Portal home</a>
+        <a class="tab" href="./asn-analysis.html">ASN-Analysis</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="card" aria-labelledby="planned">
+      <h2 class="title" id="planned">Coming soon</h2>
+      <p>Explore the pages planned for future routing analysis. These placeholders do not contain measurements.</p>
+      <ul>
+        <li><a href="./internet-bgp-asn/ASNxxx.html">ASNxxx.html</a> — example ASN profile (placeholder)</li>
+        <li><a href="./internet-bgp-asn/routing-trends.html">Routing trends</a> — planned comparisons across collectors and time periods</li>
+      </ul>
+    </section>
+
+    <section class="card" aria-labelledby="overview">
+      <h2 class="title" id="overview">Reading an Internet route</h2>
+      <p>Border Gateway Protocol (BGP) is how independently managed networks exchange information about reachable blocks of IP addresses. An Autonomous System Number (ASN) identifies one of those networks. For a typical BGP route, the rightmost ASN in the AS path is the origin, while the earlier ASNs describe the route as seen by a collector peer.</p>
+      <p>For example, if two peers see the same prefix through different AS paths but those paths end at the same ASN, the observations show different routes to the same origin, not an origin change. If the origins differ, check more peers and timestamps before drawing a conclusion: multiple networks may legitimately originate the same prefix.</p>
+    </section>
+
+    <section class="card" aria-labelledby="sources">
+      <h2 class="title" id="sources">Public data sources</h2>
+      <ul>
+        <li><a href="https://www.caida.org/catalog/datasets/as-relationships/">CAIDA AS Relationships</a>: inferred customer–provider and peer-to-peer relationships between ASNs.</li>
+        <li><a href="https://www.routeviews.org/routeviews/">RouteViews</a>: public BGP routing table snapshots and updates gathered from collector peers.</li>
+        <li><a href="https://ris.ripe.net/docs/">RIPE Routing Information Service (RIS)</a>: public BGP observations from a separate network of collectors.</li>
+      </ul>
+    </section>
+
+    <section class="card" aria-labelledby="method">
+      <h2 class="title" id="method">How to compare observations</h2>
+      <p>Compare the same IP prefix and time window across collectors. Record the collector and peer for each route, then distinguish changes in the origin ASN from changes elsewhere in the path. Use a dated CAIDA snapshot for context on adjacent ASNs.</p>
+      <p>Collectors see only the routes their peers share. An unobserved route is not proof of an outage, and a CAIDA relationship is an inference, not proof of a business agreement or the path packets actually took.</p>
+      <p class="note">This landing page explains the method and links to the data sources. It does not display live measurements.</p>
+    </section>
+  </main>
+</body>
+</html>
